@@ -1,16 +1,5 @@
-export function resolveQuizRound({ isCorrect, isLastQuestion, remainingLives }) {
-  if (isCorrect) {
-    if (isLastQuestion) {
-      return { gameOver: true, isVictory: true };
-    }
-    return { gameOver: false, isVictory: false };
-  }
-
-  if (remainingLives <= 0) {
-    return { gameOver: true, isVictory: false };
-  }
-
-  if (isLastQuestion) {
+export function resolveQuizRound({ isCorrect, remainingLives }) {
+  if (!isCorrect && remainingLives <= 0) {
     return { gameOver: true, isVictory: false };
   }
 

@@ -19,21 +19,21 @@ import {
   updatePackItems,
 } from '../src/game-engines/gamePackUtils.js';
 
-test('resolveQuizRound returns victory only for correct final answer', () => {
+test('resolveQuizRound keeps the game running after a correct answer when hearts remain', () => {
   assert.deepEqual(
     resolveQuizRound({ isCorrect: true, isLastQuestion: true, remainingLives: 3 }),
-    { gameOver: true, isVictory: true }
+    { gameOver: false, isVictory: false }
   );
 });
 
-test('resolveQuizRound returns defeat for wrong final answer with lives remaining', () => {
+test('resolveQuizRound keeps the game running after a wrong answer when hearts remain', () => {
   assert.deepEqual(
     resolveQuizRound({ isCorrect: false, isLastQuestion: true, remainingLives: 2 }),
-    { gameOver: true, isVictory: false }
+    { gameOver: false, isVictory: false }
   );
 });
 
-test('resolveQuizRound returns defeat for timeout or wrong answer when lives reach zero', () => {
+test('resolveQuizRound returns defeat only when timeout or wrong answer makes hearts reach zero', () => {
   assert.deepEqual(
     resolveQuizRound({ isCorrect: false, isLastQuestion: false, remainingLives: 0 }),
     { gameOver: true, isVictory: false }

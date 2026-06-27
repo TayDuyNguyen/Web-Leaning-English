@@ -34,6 +34,7 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
   });
 
   const currentQuestion = shuffledQuestions[currentIdx];
+  const totalQuestions = shuffledQuestions.length;
 
   const triggerShake = () => {
     setShake(true);
@@ -50,6 +51,26 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
     setTimeLeft(timerLimit);
     setSelectedBtnIndex(null);
     setCanAnswer(true);
+  };
+
+  const continueToNextQuestion = (stableIdx) => {
+    if (totalQuestions <= 0) return;
+
+    const shouldWrap = stableIdx + 1 >= totalQuestions;
+    if (shouldWrap) {
+      const rotatedQuestions =
+        totalQuestions > 1
+          ? [...shuffledQuestions.slice(1), shuffledQuestions[0]].sort(() => Math.random() - 0.5)
+          : [...shuffledQuestions];
+      setShuffledQuestions(rotatedQuestions);
+      setCurrentIdx(0);
+      setTimeLeft(timerLimit);
+      setSelectedBtnIndex(null);
+      setCanAnswer(true);
+      return;
+    }
+
+    moveToQuestion(stableIdx + 1);
   };
 
   const handleTimeout = useEffectEvent(() => {
@@ -74,7 +95,6 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
       const newL = l - 1;
       const result = resolveQuizRound({
         isCorrect: false,
-        isLastQuestion: stableIdx + 1 >= shuffledQuestions.length,
         remainingLives: newL,
       });
       if (newL <= 0) {
@@ -88,7 +108,7 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
             setGameOver(result.gameOver);
             setIsVictory(result.isVictory);
           } else {
-            moveToQuestion(stableIdx + 1);
+            continueToNextQuestion(stableIdx);
           }
         }, 1500);
       }
@@ -167,7 +187,6 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
     if (isCorrect) {
       const result = resolveQuizRound({
         isCorrect: true,
-        isLastQuestion: stableIdx + 1 >= shuffledQuestions.length,
         remainingLives: lives,
       });
       triggerParticles(e);
@@ -201,7 +220,7 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
           setGameOver(result.gameOver);
           setIsVictory(result.isVictory);
         } else {
-          moveToQuestion(stableIdx + 1);
+          continueToNextQuestion(stableIdx);
         }
       }, 1500);
     } else {
@@ -213,7 +232,6 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
         const newL = l - 1;
         const result = resolveQuizRound({
           isCorrect: false,
-          isLastQuestion: stableIdx + 1 >= shuffledQuestions.length,
           remainingLives: newL,
         });
         if (newL <= 0) {
@@ -227,7 +245,7 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
               setGameOver(result.gameOver);
               setIsVictory(result.isVictory);
             } else {
-              moveToQuestion(stableIdx + 1);
+              continueToNextQuestion(stableIdx);
             }
           }, 1500);
         }
@@ -268,11 +286,11 @@ export default function TenseRush({ questionsList, timerLimit, onQuit, isVocabMo
     return (
       <div id="gameOverScreen" className="game-over-screen">
         <div className="game-over-icon">{isVictory ? '🏆' : '💀'}</div>
-        <h2 className="game-over-title">{isVictory ? 'Thử Thách Hoàn Thành!' : 'Game Over!'}</h2>
+        <h2 className="game-over-title">{isVictory ? 'Thử Thách Hoàn Thành!' : 'Hết Tim Rồi!'}</h2>
         <p className="game-over-desc">
           {isVictory
             ? 'Tuyệt vời! Bạn đã vượt qua tất cả các thử thách của chế độ tốc độ ngữ pháp.'
-            : 'Rất tiếc! Bạn đã hết lượt tim hỗ trợ. Hãy tiếp tục luyện tập và thử lại nhé!'}
+            : 'Bạn đã hết tim nên màn chơi tạm dừng. Khi còn tim, game sẽ tự xoay vòng câu hỏi và chơi tiếp liên tục.'}
         </p>
         
         <div className="game-stats-grid">

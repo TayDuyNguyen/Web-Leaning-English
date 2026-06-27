@@ -138,10 +138,8 @@ export default function GameArena({ updateQuitLock }) {
   const grammarList = useMemo(() => selectedGrammarPack?.items || [], [selectedGrammarPack]);
   const sentenceList = useMemo(() => selectedSentencePack?.items || [], [selectedSentencePack]);
 
-  const activeVocab = useMemo(() => {
-    return vocabList.filter((item) => (item.mastery || 0) < 3);
-  }, [vocabList]);
-  const activeVocabCount = activeVocab.length;
+  const playableVocab = useMemo(() => vocabList.filter((item) => item?.word && item?.meaning), [vocabList]);
+  const playableVocabCount = playableVocab.length;
 
   const handleUpdateQuitLock = useCallback(
     (locked) => {
@@ -152,18 +150,18 @@ export default function GameArena({ updateQuitLock }) {
   );
 
   const buildRushQuestions = useCallback(() => {
-    if (rushMode === 'vocab' && activeVocabCount >= 4) {
-      return generateRushVocabQuestions(activeVocab, vocabList);
+    if (rushMode === 'vocab' && playableVocabCount >= 4) {
+      return generateRushVocabQuestions(playableVocab, vocabList);
     }
     return grammarList.length >= 1 ? shuffleList(grammarList) : shuffleList(gameData.tenseRush);
-  }, [rushMode, activeVocabCount, activeVocab, vocabList, grammarList]);
+  }, [rushMode, playableVocabCount, playableVocab, vocabList, grammarList]);
 
   const buildScrambleQuestions = useCallback(() => {
-    if (scrambleMode === 'vocab' && activeVocabCount >= 1) {
-      return generateScrambleVocabQuestions(activeVocab);
+    if (scrambleMode === 'vocab' && playableVocabCount >= 1) {
+      return generateScrambleVocabQuestions(playableVocab);
     }
     return sentenceList.length >= 1 ? shuffleList(sentenceList) : shuffleList(gameData.sentenceBuilder);
-  }, [scrambleMode, activeVocabCount, activeVocab, sentenceList]);
+  }, [scrambleMode, playableVocabCount, playableVocab, sentenceList]);
 
   const syncFromHash = useEffectEvent(() => {
     if (!isStorageReady) return;
@@ -187,7 +185,7 @@ export default function GameArena({ updateQuitLock }) {
       setGameStatus('active-scramble');
       setScrambleQuestions((prev) => (prev.length === 0 ? nextQuestions : prev));
     } else if (hash === '#game/battle') {
-      if (activeVocabCount < 4) {
+      if (playableVocabCount < 4) {
         window.location.hash = '#game';
         openDataManager('vocab');
         return;
@@ -426,8 +424,8 @@ export default function GameArena({ updateQuitLock }) {
 
   const handleStartGame = (type) => {
     if (type === 'battle') {
-      if (activeVocabCount < 4) {
-        alert('⚠️ Bộ từ vựng đang chọn cần ít nhất 4 từ đang học để bắt đầu đấu từ vựng.');
+      if (playableVocabCount < 4) {
+        alert('⚠️ Bộ từ vựng đang chọn cần ít nhất 4 từ hợp lệ để bắt đầu đấu từ vựng.');
         openDataManager('vocab');
         return;
       }
@@ -437,8 +435,8 @@ export default function GameArena({ updateQuitLock }) {
     }
 
     if (type === 'rush') {
-      if (rushMode === 'vocab' && activeVocabCount < 4) {
-        alert('⚠️ Bộ từ vựng đang chọn cần ít nhất 4 từ đang học để chơi chế độ từ vựng.');
+      if (rushMode === 'vocab' && playableVocabCount < 4) {
+        alert('⚠️ Bộ từ vựng đang chọn cần ít nhất 4 từ hợp lệ để chơi chế độ từ vựng.');
         openDataManager('vocab');
         return;
       }
@@ -456,8 +454,8 @@ export default function GameArena({ updateQuitLock }) {
       return;
     }
 
-    if (scrambleMode === 'vocab' && activeVocabCount < 1) {
-      alert('⚠️ Bộ từ vựng đang chọn cần ít nhất 1 từ đang học để chơi chế độ xây câu theo từ vựng.');
+    if (scrambleMode === 'vocab' && playableVocabCount < 1) {
+      alert('⚠️ Bộ từ vựng đang chọn cần ít nhất 1 từ hợp lệ để chơi chế độ xây câu theo từ vựng.');
       openDataManager('vocab');
       return;
     }

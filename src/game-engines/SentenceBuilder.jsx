@@ -38,14 +38,32 @@ export default function SentenceBuilder({ questionsList, onQuit, isVocabMode = f
   const currentIdxRef = useRef(currentIdx);
   useEffect(() => { currentIdxRef.current = currentIdx; }, [currentIdx]);
   const currentQuestion = shuffledQuestions[currentIdx];
+  const totalQuestions = shuffledQuestions.length;
 
-  const moveToQuestion = (nextIdx) => {
-    const nextQuestion = shuffledQuestions[nextIdx];
+  const moveToQuestion = (nextIdx, nextQuestions = shuffledQuestions) => {
+    const nextQuestion = nextQuestions[nextIdx];
     setCurrentIdx(nextIdx);
     setSelectedWords([]);
     setWordPool(buildWordPool(nextQuestion));
     setIsCorrectState(null);
     setCanAnswer(true);
+  };
+
+  const continueToNextQuestion = (stableIdx) => {
+    if (totalQuestions <= 0) return;
+
+    const shouldWrap = stableIdx + 1 >= totalQuestions;
+    if (shouldWrap) {
+      const rotatedQuestions =
+        totalQuestions > 1
+          ? [...shuffledQuestions.slice(1), shuffledQuestions[0]].sort(() => Math.random() - 0.5)
+          : [...shuffledQuestions];
+      setShuffledQuestions(rotatedQuestions);
+      moveToQuestion(0, rotatedQuestions);
+      return;
+    }
+
+    moveToQuestion(stableIdx + 1);
   };
 
   const triggerShake = () => {
@@ -144,7 +162,6 @@ export default function SentenceBuilder({ questionsList, onQuit, isVocabMode = f
     if (isCorrect) {
       const result = resolveQuizRound({
         isCorrect: true,
-        isLastQuestion: stableIdx + 1 >= shuffledQuestions.length,
         remainingLives: lives,
       });
       const newStreak = consecutiveCorrect + 1;
@@ -173,7 +190,7 @@ export default function SentenceBuilder({ questionsList, onQuit, isVocabMode = f
           setGameOver(result.gameOver);
           setIsVictory(result.isVictory);
         } else {
-          moveToQuestion(stableIdx + 1);
+          continueToNextQuestion(stableIdx);
         }
       }, 1500);
     } else {
@@ -184,7 +201,6 @@ export default function SentenceBuilder({ questionsList, onQuit, isVocabMode = f
         const newL = l - 1;
         const result = resolveQuizRound({
           isCorrect: false,
-          isLastQuestion: stableIdx + 1 >= shuffledQuestions.length,
           remainingLives: newL,
         });
         if (newL <= 0) {
@@ -198,7 +214,7 @@ export default function SentenceBuilder({ questionsList, onQuit, isVocabMode = f
               setGameOver(result.gameOver);
               setIsVictory(result.isVictory);
             } else {
-              moveToQuestion(stableIdx + 1);
+              continueToNextQuestion(stableIdx);
             }
           }, 1500);
         }
@@ -240,11 +256,11 @@ export default function SentenceBuilder({ questionsList, onQuit, isVocabMode = f
     return (
       <div id="gameOverScreen" className="game-over-screen">
         <div className="game-over-icon">{isVictory ? '🏆' : '💀'}</div>
-        <h2 className="game-over-title">{isVictory ? 'Thử Thách Hoàn Thành!' : 'Game Over!'}</h2>
+        <h2 className="game-over-title">{isVictory ? 'Thử Thách Hoàn Thành!' : 'Hết Tim Rồi!'}</h2>
         <p className="game-over-desc">
           {isVictory
             ? 'Tuyệt vời! Bạn đã vượt qua tất cả các thử thách của chế độ xây câu.'
-            : 'Rất tiếc! Bạn đã hết lượt tim hỗ trợ. Hãy tiếp tục luyện tập và thử lại nhé!'}
+            : 'Bạn đã hết tim nên màn chơi tạm dừng. Khi còn tim, game sẽ tiếp tục xoay vòng câu hỏi thay vì tự thoát sớm.'}
         </p>
         
         <div className="game-stats-grid">

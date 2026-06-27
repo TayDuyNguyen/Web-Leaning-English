@@ -14,8 +14,7 @@ const MONSTERS = [
 export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitLock, onWordResult }) {
   const { authReady, session } = useAuth();
   const buildLearningQueue = () => {
-    const learningVocab = vocabList.filter(item => (item.mastery || 0) < 3);
-    return [...learningVocab].sort(() => Math.random() - 0.5);
+    return [...vocabList].sort(() => Math.random() - 0.5);
   };
 
   const resetTurn = (nextQueue) => {
@@ -97,7 +96,7 @@ export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitL
     if (gameOver) {
       updateQuitLock(false);
     } else {
-      const isLocked = unlearnedWords.length > 0 && hearts > 0;
+      const isLocked = hearts > 0;
       updateQuitLock(isLocked);
     }
   }, [unlearnedWords, hearts, gameOver, updateQuitLock]);
@@ -240,8 +239,11 @@ export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitL
       const newMonsterHp = Math.max(0, monsterHp - damage);
       setMonsterHp(newMonsterHp);
 
-      // Remove current correct word from the queue
-      const updatedQueue = unlearnedWords.slice(1);
+      // Endless loop: move the current word to the back so the battle continues while hearts remain.
+      const updatedQueue =
+        unlearnedWords.length > 1
+          ? [...unlearnedWords.slice(1), unlearnedWords[0]]
+          : [...unlearnedWords];
 
       if (newMonsterHp <= 0) {
         // Defeated monster!
@@ -252,7 +254,7 @@ export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitL
         const newXp = playerXp + xpEarned;
         const xpNeeded = playerLevel * 100;
 
-        setBattleLog(`💥 Tiêu diệt ${currentMonster.name}! +${xpEarned} XP! Còn ${updatedQueue.length} từ cần học.${heartMsg}`);
+        setBattleLog(`💥 Tiêu diệt ${currentMonster.name}! +${xpEarned} XP! Chuẩn bị sang quái mới.${heartMsg}`);
 
         let finalLevel = playerLevel;
         let finalXp = newXp;
@@ -268,24 +270,20 @@ export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitL
         });
 
         setTimeout(() => {
-          if (updatedQueue.length === 0) {
-            setGameOver(true);
-          } else {
-            const nextRound = battleRound + 1;
-            setBattleRound(nextRound);
-            setMonsterHp(100);
-            const nextMonster = MONSTERS[Math.floor(Math.random() * MONSTERS.length)];
-            setCurrentMonster(nextMonster);
-            setBattleLog(`⚔️ Một ${nextMonster.name} mới xuất hiện ở Round ${nextRound}!`);
-            resetTurn(updatedQueue);
-          }
+          const nextRound = battleRound + 1;
+          setBattleRound(nextRound);
+          setMonsterHp(100);
+          const nextMonster = MONSTERS[Math.floor(Math.random() * MONSTERS.length)];
+          setCurrentMonster(nextMonster);
+          setBattleLog(`⚔️ Một ${nextMonster.name} mới xuất hiện ở Round ${nextRound}!`);
+          resetTurn(updatedQueue);
         }, 1200);
       } else {
         const xpEarned = 15;
         const newXp = playerXp + xpEarned;
         const xpNeeded = playerLevel * 100;
 
-        setBattleLog(`⚡ Chiêu đánh trúng! Gây ${damage} sát thương! +${xpEarned} XP. Còn ${updatedQueue.length} từ cần học.${heartMsg}`);
+        setBattleLog(`⚡ Chiêu đánh trúng! Gây ${damage} sát thương! +${xpEarned} XP.${heartMsg}`);
 
         let finalLevel = playerLevel;
         let finalXp = newXp;
@@ -301,11 +299,7 @@ export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitL
         });
 
         setTimeout(() => {
-          if (updatedQueue.length === 0) {
-            setGameOver(true);
-          } else {
-            resetTurn(updatedQueue);
-          }
+          resetTurn(updatedQueue);
         }, 1500);
       }
 
@@ -370,42 +364,31 @@ export default function VocabBattle({ vocabList, timerLimit, onQuit, updateQuitL
   const skillCardsClasses = ['a', 'b', 'c', 'd'];
 
   if (gameOver) {
-    const remainingCount = unlearnedWords.length;
-    const isActuallyVictory = remainingCount === 0;
-
     return (
       <div id="gameOverScreen" className="game-over-screen">
-        <div className="game-over-icon">{isActuallyVictory ? '🏆' : '💀'}</div>
-        <h2 className="game-over-title">{isActuallyVictory ? 'Đã Thuộc Hết Từ Vựng!' : 'Chưa Thuộc Hết Từ!'}</h2>
+        <div className="game-over-icon">💀</div>
+        <h2 className="game-over-title">Hết Tim Rồi!</h2>
         <p className="game-over-desc">
-          {isActuallyVictory
-            ? `Chúc mừng bạn đã bảo vệ đấu trường thành công và thuộc hết toàn bộ ${vocabList.length} từ vựng!`
-            : `Bạn chưa thuộc hết từ vựng! Còn lại ${remainingCount} từ cần thuộc. Hãy hồi sinh để học tiếp!`}
+          Bạn đã hết tim nên trận đấu tạm dừng. Khi còn tim, đấu trường sẽ tiếp tục xoay vòng từ vựng và chơi mãi thay vì tự thoát sớm.
         </p>
         
         <div className="game-stats-grid">
           <div className="game-stat-card">
-            <div className="game-stat-val">{isActuallyVictory ? 'Hoàn thành!' : 'Chưa thuộc'}</div>
-            <div className="game-stat-lbl">Điểm Đạt Được / Trạng Thái</div>
+            <div className="game-stat-val">{defeatedMonsters}</div>
+            <div className="game-stat-lbl">Quái Đã Hạ</div>
           </div>
           <div className="game-stat-card">
-            <div className="game-stat-val">{vocabList.length - remainingCount}/{vocabList.length} từ</div>
-            <div className="game-stat-lbl">Số từ đã thuộc</div>
+            <div className="game-stat-val">{maxCombo}</div>
+            <div className="game-stat-lbl">Combo Lớn Nhất</div>
           </div>
         </div>
 
         <div className="game-actions">
-          {isActuallyVictory ? (
-            <>
-              <button onClick={onQuit} className="btn btn--outline-theme">Về sảnh trò chơi</button>
-              <button onClick={handleRestart} className="btn btn--primary">Chơi Trận Mới</button>
-            </>
-          ) : (
-            <>
-              <button onClick={onQuit} className="btn btn--outline-theme">Về sảnh trò chơi</button>
-              <button onClick={reviveAndContinue} className="btn btn--primary" id="goActionBtn">Hồi Sinh & Học Tiếp ⚡</button>
-            </>
-          )}
+          <>
+            <button onClick={onQuit} className="btn btn--outline-theme">Về sảnh trò chơi</button>
+            <button onClick={reviveAndContinue} className="btn btn--primary" id="goActionBtn">Hồi Sinh & Học Tiếp ⚡</button>
+            <button onClick={handleRestart} className="btn btn--outline-theme">Chơi Lại Từ Đầu</button>
+          </>
         </div>
       </div>
     );
