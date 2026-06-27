@@ -1,4 +1,4 @@
-window['chuyen-de-thi-dong-tu_data'] = {
+export const tensesData = {
   "tenses": [
     {
       "id": 1,
@@ -442,7 +442,7 @@ window['chuyen-de-thi-dong-tu_data'] = {
           "num": 13,
           "type": "fill",
           "text": "I_____(think) of my mother, who has devoted her whole life to our family.",
-          "answer": "am thinking / người đã cống hiến trọn đời cho gia đình tôi",
+          "answer": "am thinking",
           "explanation": "Căn cứ vào động từ “think” – khi mô tả hành động thì “think” được coi là một động từ động, vẫn có thể đi với thể tiếp diễn."
         },
         {
@@ -650,7 +650,7 @@ window['chuyen-de-thi-dong-tu_data'] = {
           "num": 11,
           "type": "fill",
           "text": "He_____(read) this book for two hours, but he hasn’t finished it yet.",
-          "answer": "has been reading / và anh ấy vẫn chưa đọc xong nó",
+          "answer": "has been reading",
           "explanation": "Căn cứ vào cách dùng của thì hiện tại hoàn thành tiếp diễn: nhấn mạnh tính liên tục của hành động."
         },
         {
@@ -1818,7 +1818,7 @@ window['chuyen-de-thi-dong-tu_data'] = {
           "num": 7,
           "type": "fill",
           "text": "I saw you in the park yesterday. You_____(sit) on the grass and _____(read) a book.",
-          "answer": "Khi hai vế trong câu đồng chủ ngữ và được nối với nhau bởi liên từ “and” thì động từ thứ hai không cần nhắc lại trợ động từ nữa nếu chia cùng thì / như vậy ở đây có “are reading",
+          "answer": "were sitting / reading | were sitting / were reading",
           "explanation": "Căn cứ vào ngữ cảnh của câu ta chia thì quá khứ tiếp diễn."
         },
         {

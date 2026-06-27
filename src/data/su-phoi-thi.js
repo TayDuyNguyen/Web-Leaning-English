@@ -1,4 +1,4 @@
-window['su-phoi-thi_data'] = {
+export const sequenceOfTensesData = {
   "tenses": [
     {
       "id": 1,

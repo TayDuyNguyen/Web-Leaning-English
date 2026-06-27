@@ -1,4 +1,4 @@
-window.grammarTopics = [
+export const grammarTopics = [
   {
     "id": "chuyen-de-thi-dong-tu",
     "number": 1,

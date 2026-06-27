@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="xgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C7D2FE;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect width="64" height="64" rx="14" ry="14" fill="url(#bg)"/>
+  <!-- Letter G -->
+  <text x="9" y="42" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="30" fill="url(#xgrad)">G</text>
+  <!-- Bold X in bottom-right with accent color -->
+  <text x="36" y="54" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="26" fill="#FBBF24">X</text>
+  <!-- Small dot accent -->
+  <circle cx="56" cy="10" r="4" fill="#FBBF24" opacity="0.9"/>
+</svg>
