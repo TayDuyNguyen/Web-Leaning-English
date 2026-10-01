@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'feature/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, test, build (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22.x is the hosting baseline; 24.x matches local development.
+        # Both are required: eslint 10 rejects Node 22.12 and below, and 23.x is
+        # unsupported by eslint's engine range. See package.json "engines".
+        node-version: ['22.x', '24.x']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install from lockfile
+        run: npm ci
+
+      - name: Verify lockfile is in sync
+        run: npm ls --depth=0
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Content seed is in sync with src/data
+        # supabase/seed/content.sql is the artifact applied to the database. If it
+        # has drifted from its source, the deploy would seed lessons that no longer
+        # match the app's own fallback content.
+        run: npm run seed:check
+
+      - name: Production build
+        run: npm run build
+
+      - name: Bundle size report
+        # Report-only. Phase 1 moves src/data/* out of the bundle; at that point
+        # change this to `npm run size -- --strict` to enforce the budget.
+        run: npm run size
+
+      - name: Upload dist artifact
+        if: matrix.node-version == '22.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+          if-no-files-found: error

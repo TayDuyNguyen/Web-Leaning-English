@@ -18,4 +18,12 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // Node-context files: build scripts and the test runner. Without this block
+    // they either inherit browser globals or, in the .mjs case, match no config
+    // at all and go silently unlinted.
+    files: ['scripts/**/*.{js,mjs,cjs}', 'test/**/*.{js,mjs,cjs}', 'eslint.config.js', 'vite.config.js'],
+    extends: [js.configs.recommended],
+    languageOptions: { globals: globals.node },
+  },
 ])

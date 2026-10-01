@@ -1,9 +1,21 @@
-import { useState, useMemo } from 'react';
-import { grammarTopics } from '../data/topics';
+import { useState, useMemo, useEffect } from 'react';
+import { loadTopics } from '../lib/contentSource';
 
 export default function Dashboard({ onSelectTopic, scores }) {
+  // null until the source answers; Supabase first, the bundled catalogue behind it.
+  const [topics, setTopics] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    loadTopics().then((next) => {
+      if (active) setTopics(next);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const categories = [
     { key: 'All', label: 'Tất cả' },
@@ -15,13 +27,14 @@ export default function Dashboard({ onSelectTopic, scores }) {
   ];
 
   const filteredTopics = useMemo(() => {
-    return grammarTopics.filter(t => {
+    if (!topics) return [];
+    return topics.filter(t => {
       const matchCat = activeCategory === 'All' || t.category.includes(activeCategory);
       const matchSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           t.englishName.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCat && matchSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [topics, activeCategory, searchQuery]);
 
   const getTopicProgress = (topicId, totalExercises) => {
     const tSc = scores[topicId];
@@ -100,7 +113,11 @@ export default function Dashboard({ onSelectTopic, scores }) {
 
       {/* Topics Grid */}
       <div id="topicsGrid" className="topics-grid">
-        {filteredTopics.length === 0 ? (
+        {topics === null ? (
+          <div style={{ gridColumn: '1/-1', padding: '64px 0', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>
+            Đang tải chuyên đề…
+          </div>
+        ) : filteredTopics.length === 0 ? (
           <div style={{ gridColumn: '1/-1', padding: '64px 0', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>
             Không tìm thấy chuyên đề phù hợp.
           </div>

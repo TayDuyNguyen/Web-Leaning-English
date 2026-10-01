@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
-import { grammarTopics } from '../data/topics';
-import { tensesData } from '../data/chuyen-de-thi-dong-tu';
-import { sequenceOfTensesData } from '../data/su-phoi-thi';
+import { loadTopic } from '../lib/contentSource';
+import { parseTopicSubRoute, topicHashPrefix, writeHashRoute } from '../lib/routes';
 
-const topicDataMap = {
-  'chuyen-de-thi-dong-tu': tensesData,
-  'su-phoi-thi': sequenceOfTensesData
-};
+// A deep link names the section it wants; a fresh visit defaults to the first theory
+// section, which is what the sidebar highlights on arrival.
+function initialItemFor(topicId, data) {
+  const fromUrl = parseTopicSubRoute(window.location.hash, topicId);
+  if (fromUrl) return fromUrl;
+
+  if (data.tenses && data.tenses.length > 0) {
+    return { type: 'theory', id: 0 };
+  } else if (data.exercises && data.exercises.length > 0) {
+    return { type: 'exercise', id: 0 };
+  }
+  return { type: 'theory', id: 0 };
+}
 
 function checkUserAnswer(userVal, correctVal, q) {
   const norm = s => {
@@ -60,64 +68,70 @@ function checkUserAnswer(userVal, correctVal, q) {
 
 export default function TopicStudy({ topicId, onBackToDashboard, scores, onUpdateScores }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const topicInfo = grammarTopics.find(t => t.id === topicId);
-  const data = topicDataMap[topicId];
-
-  const [activeItem, setActiveItem] = useState(() => {
-    if (data) {
-      const hash = window.location.hash;
-      const prefix = `#topic-${topicId}/`;
-      if (hash.startsWith(prefix)) {
-        const subpath = hash.substring(prefix.length);
-        const [type, idStr] = subpath.split('-');
-        const id = parseInt(idStr);
-        if ((type === 'theory' || type === 'exercise') && !isNaN(id)) {
-          return { type, id };
-        }
-      }
-
-      if (data.tenses && data.tenses.length > 0) {
-        return { type: 'theory', id: 0 };
-      } else if (data.exercises && data.exercises.length > 0) {
-        return { type: 'exercise', id: 0 };
-      }
-    }
-    return { type: 'theory', id: 0 };
-  });
+  const [view, setView] = useState({ status: 'loading', topic: null, content: null });
+  const [activeItem, setActiveItem] = useState(null);
 
   const [inputStates, setInputStates] = useState({}); // Stores text field inputs: { [qNum]: string or [string, string...] }
 
-  // Sync URL hash when activeItem changes
+  // App keys this view by topicId, so switching topics remounts it and the initial
+  // state below is already the loading state. Nothing to reset here.
   useEffect(() => {
-    if (activeItem && topicId) {
-      const expectedHash = `#topic-${topicId}/${activeItem.type}-${activeItem.id}`;
-      if (window.location.hash !== expectedHash) {
-        window.location.hash = expectedHash;
-      }
-    }
+    let active = true;
+
+    loadTopic(topicId).then(({ topic, content }) => {
+      if (!active) return;
+      setView({ status: 'ready', topic, content });
+      // Resolved as the content lands rather than on mount: writing the URL before
+      // the source answers would replace a deep link's `exercise-7` with the default
+      // section, which is the cold-load defect Phase 0 closed.
+      if (content) setActiveItem(initialItemFor(topicId, content));
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [topicId]);
+
+  // Keep the URL on the item being shown. Replaced, never pushed: clicks write the
+  // address themselves (see handleItemSelect), so anything reaching here is a
+  // normalisation of a state the user did not navigate to — a mount default, or a
+  // back/forward traversal that already changed the URL.
+  useEffect(() => {
+    if (!activeItem || !topicId) return;
+    const expectedHash = `#topic-${topicId}/${activeItem.type}-${activeItem.id}`;
+    writeHashRoute(expectedHash, { replace: true });
   }, [activeItem, topicId]);
 
   // Sync activeItem from URL hash when hash changes (e.g. browser back/forward)
   useEffect(() => {
     const syncItemFromHash = () => {
       const hash = window.location.hash;
-      const prefix = `#topic-${topicId}/`;
-      if (hash.startsWith(prefix)) {
-        const subpath = hash.substring(prefix.length);
-        const [type, idStr] = subpath.split('-');
-        const id = parseInt(idStr);
-        if ((type === 'theory' || type === 'exercise') && !isNaN(id)) {
-          setActiveItem(prev => {
-            if (prev.type === type && prev.id === id) return prev;
-            return { type, id };
-          });
-        }
-      }
+      if (!hash.startsWith(topicHashPrefix(topicId))) return;
+
+      // A bare `#topic-<id>` (typed, or an older link) means the first section.
+      // Ignoring it would leave the view on whatever was open while the address says
+      // something else.
+      const next = parseTopicSubRoute(hash, topicId) ?? { type: 'theory', id: 0 };
+
+      // While nothing is open the load owns the URL and re-reads the hash itself, so
+      // a traversal mid-load must not pre-empt it with a default section.
+      setActiveItem((prev) => (!prev || (prev.type === next.type && prev.id === next.id) ? prev : next));
     };
 
     window.addEventListener('hashchange', syncItemFromHash);
     return () => window.removeEventListener('hashchange', syncItemFromHash);
   }, [topicId]);
+
+  const topicInfo = view.topic;
+  const data = view.content;
+
+  if (view.status === 'loading') {
+    return (
+      <div className="container" style={{ padding: '64px', textAlign: 'center', color: 'var(--white)' }}>
+        Đang tải nội dung chuyên đề…
+      </div>
+    );
+  }
 
   if (!data || !topicInfo) {
     return (
@@ -142,6 +156,7 @@ export default function TopicStudy({ topicId, onBackToDashboard, scores, onUpdat
   // Sidebar item lists
   const handleItemSelect = (type, id) => {
     setActiveItem({ type, id });
+    writeHashRoute(`#topic-${topicId}/${type}-${id}`);
     setMobileSidebarOpen(false);
     setInputStates({});
   };
