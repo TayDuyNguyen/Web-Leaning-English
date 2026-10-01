@@ -29,7 +29,8 @@ These are measured values, not estimates.
 | Content tables in DB | **migration authored, not yet applied** | `20260929000001_content_tables.sql` validated by executing it on Postgres 17 |
 | Content seed artifact | **30 topics / 21 lessons / 24 exercises / 620 questions** (`supabase/seed/content.sql`, 339,745 bytes, generated) | `npm run seed:check` fails CI on drift from `src/data/` |
 | `.env` | absent | App runs correctly in local-only mode |
-| CI/CD | `.github/workflows/ci.yml` written (lint + test + `seed:check` + build + size) | **Has never run** — not pushed to GitHub yet (G22) |
+| CI/CD | `.github/workflows/ci.yml` (lint + test + `seed:check` + build + size) | **Ran for the first time on 2026-10-01 — red on `4e8b44a`, cause found and fixed.** Both triggers (push `36833494089`, PR #1 `36834479634`) failed in `Install from lockfile` in all 4 matrix jobs, 1–3 s per failure: the committed lock was missing the `@emnapi/core` / `@emnapi/runtime` peer entries that npm now auto-installs (see §7). Green status still needs the fix pushed |
+| Hosting today | Vercel project `web-leaning-english` (`tayduynguyens-projects`), configured in the dashboard — there is no `vercel.json` in the repo | Deployed a **preview of this branch** (commit `4e8b44a`) to `web-leaning-english-git-feature-s-…vercel.app`; preview access is behind Vercel SSO protection. GitHub Pages is **not** configured (Pages API 404), although three internal `pages build and deployment` runs exist on `main` from June 2026 |
 | Known dead data | `src/data/default-vocab.js` = `export const defaultVocab = []` | Empty since creation in `61f5c7e` |
 
 **Verified working in a browser** (headless Chrome, production build served by `vite preview`, zero console errors): dashboard, theme toggle, topic search + category filters, theory/exercise views for Chuyên đề 1 (12 theory sections, 21 exercises), Tense Rush (scoring, combo, hearts, timer, explanation), Sentence Builder, Data Manager, auth modal with graceful "Supabase chưa được cấu hình" degradation, and Vocab Battle's empty-pack guard. The dashboard grid, deep links, back-button behaviour, and Chuyên đề 1's theory/exercise rendering with answer scoring are now automated as the 12 checks behind `npm run smoke:ui`, reproducible from a clean profile; theme toggle, search and category filters, the three game engines, Data Manager and the auth modal are still manual.
@@ -84,7 +85,7 @@ The source brief was written against an assumed empty repo. Before it is used as
 
 | Claim in `deployment.md` | Reality |
 | --- | --- |
-| "đã có deployment Vercel" | **False.** No `vercel.json`, no `.github/`, no CI of any kind. Nothing is deployed. |
+| "đã có deployment Vercel" | **False when written, true now.** On 2026-09-28 the repo had no `vercel.json`, no `.github/`, no CI of any kind and nothing deployed. As of 2026-10-01 a Vercel project exists and builds branch previews — configured dashboard-side, so there is still no Vercel file in the tree. |
 | "2. Authentication" in the build order | **Already done.** `AuthContext.jsx` + `userStorage.js` provide sign-in/sign-up/session/RLS-scoped sync. |
 | "4. Vocabulary + Grammar" as new work | **Overstated in both directions.** 30 grammar topics are catalogued but only **2 have content** (`src/data/content-modules.js`), so 24 of 271 advertised exercises are reachable. The vocabulary engine is complete but ships with zero words. |
 | "3. Learning content" as new work | Content exists but is **misplaced** — in the bundle rather than the database. |
@@ -154,7 +155,7 @@ Phases 1–2 are deliberately ahead of the rewrite: they are stack-neutral, they
 
 **Nothing reaches production until every Blocker row is `pass`.** This section is the gate.
 
-> **Current standing (2026-09-29, after Phase 1):** of 16 hard blockers — **9 pass** (G1, G2, G3, G4, G6, G11, G12, G13, plus G5 now that content is code-split), **0 fail**, **7 pending** (G7, G8, G9, G10, G20, G21, G22). Every pending blocker needs a provisioned Supabase project and a hosting account, neither of which exists yet. Phase 1 is the first work whose remaining exit criteria are **gated on infrastructure rather than on code**.
+> **Current standing (2026-10-01, after Phase 1):** of 16 hard blockers — **9 pass** (G1, G2, G3, G4, G6, G11, G12, G13, plus G5 now that content is code-split), **0 fail**, **7 pending** (G7, G8, G9, G10, G20, G21, G22). Six of those need a provisioned Supabase project and a hosting account, neither of which exists yet. G22 is different in kind: CI has now run, went red on a lockfile drift (§7), and the fix is written and container-verified — it only needs a push. Phase 1 is the first work whose remaining exit criteria are **gated on infrastructure rather than on code**.
 
 ### 6.1 Gate table
 
@@ -181,7 +182,7 @@ Phases 1–2 are deliberately ahead of the rewrite: they are stack-neutral, they
 | G19 | Analytics / real user monitoring | No | Host RUM or Supabase analytics reporting traffic | | `pending` |
 | G20 | Rollback rehearsed | **Yes** | Previous release identified and one-click restorable | | `pending` |
 | G21 | Database backup point taken | **Yes** | PITR window or a manual dump before G8 | | `pending` |
-| G22 | CI green on the release commit | **Yes** | lint + test + build job passing on the exact SHA | | `pending` — `.github/workflows/ci.yml` exists (Phase 0) but has never run on GitHub; needs a push to `main`/`feature/**` |
+| G22 | CI green on the release commit | **Yes** | lint + test + build job passing on the exact SHA | | `fail` on `4e8b44a`, **fix verified locally, not yet pushed**. `npm ci` died in 1–3 s in all 4 jobs before any other step. Root cause: `@napi-rs/wasm-runtime@1.1.5` declares peerDependencies `@emnapi/core@^1.7.1` / `@emnapi/runtime@^1.7.1`; npm resolves that caret to the newest publish (1.11.3, landed after this lock was written) and demands lock entries for it, which do not exist → `EUSAGE … Missing: @emnapi/core@1.11.3 from lock file`. Reproduced in a `node:22` container on **both** npm 10.9.9 and npm 11.21.0; `npm install --package-lock-only` adds exactly those two entries and `npm ci` then passes on both. Not a flake, not the Actions version, not the network |
 | G23 | No vulnerable runtime dependencies | No — build-time only today | `npm audit` and `npm ls --all --omit=dev`; a package is only blocking if it appears in the production tree. Becomes a **Yes** blocker the moment Edge Functions add server-side deps | | `pass with note` (measured 2026-09-28) — 5 advisories (1 moderate, 4 high: `postcss`, `browserslist`, `baseline-browser-mapping`, `nanoid`, `brace-expansion`), all transitive dev deps, all with fixes available, **none in the production tree** |
 
 ### 6.2 Environment & secrets matrix
@@ -253,7 +254,8 @@ Run against the live URL within 15 minutes of publishing.
 | Bundle stays >500 kB after Phase 1 | ~~Medium~~ → **lowered** | Medium | **Partly handled:** content is now 2 lazy chunks and first-load JS is 147.94 kB gzip. The entry chunk is still 518.75 KiB raw — that needs route-level `React.lazy` in Phase 4, with the budget enforced at G5 |
 | Bundled fallback masks a broken or stale database | New — Medium | High | `contentSource.js` separates "query failed" from "database says empty" and makes the fallback visible. Still needs a live-project test: edit one `exercises.title`, confirm the app serves the edit |
 | AI features built before Phase 2, so AI has no signal | Medium | High | Hard sequencing rule in §5 |
-| No CI means silent regressions on deploy | ~~Current~~ → **mitigated in Phase 0** | High | `.github/workflows/ci.yml` (lint + test + build + size, Node 22/24 matrix). Still needs a push to prove green on a real SHA |
+| No CI means silent regressions on deploy | ~~Current~~ → **mitigated in Phase 0** | High | `.github/workflows/ci.yml` (lint + test + build + size, Node 22/24 matrix). **First real run 2026-10-01 was red at `npm ci` in all 4 jobs** — the workflow's own green-ness is now the thing that needs proving |
+| A caret peer range silently rots the lockfile, and a local `npm ci` cannot detect it | **Materialised 2026-10-01** — High | Medium | `@napi-rs/wasm-runtime`'s peer range `@emnapi/core@^1.7.1` resolved to a version published *after* the lock was written, so `npm ci` failed with `EUSAGE` on the runner while passing on the Windows/npm 11.6.2 workstation that wrote the lock. Mitigation: regenerate with `npm install --package-lock-only` when peers drift, and treat a **Linux container on each supported Node major** (`docker run node:22 … npm ci`) as the real gate, not the laptop |
 | Router writes the URL from effects; state and URL can disagree | Was **High** — measured | Medium | **Closed in Phase 0** for the dashboard/topic levels (`useHashRouting`, `writeHashRoute` push-vs-replace, 12 unit cases + browser smoke). `GameArena.jsx` still assigns `location.hash` directly; a Phase 4 router library should absorb it |
 | Speaking/Listening blocked on content licensing | Medium | Medium | Source audio before writing the module |
 | Single-developer bus factor on `src/data/` content | High | Medium | Phase 1 + Phase 7 Admin |
@@ -267,7 +269,7 @@ Run against the live URL within 15 minutes of publishing.
 3. **Fix the 21 dead choice questions** before seeding a production project — 20 answers missing from their own options, 1 question with fewer than two options. Cheap to fix in `src/data/`, then `npm run seed:content`.
 4. **Author the 28 missing topics.** Phase 1 made this a content problem instead of a deploy problem; it did not write any content. Roughly 247 of the 271 advertised exercises are still unreachable.
 5. **M4–M6 (Phase 2, `lesson_progress`)** — the highest-leverage remaining change, and the prerequisite for Phases 3, 6 and 7.
-6. **G22 + `smoke:ui` in CI** — the workflow now runs lint, unit tests, `seed:check`, build and size; the browser smoke still needs a Chrome binary and a `vite preview` step on the runner before it can be added.
+6. **Push the G22 fix and watch it go green** — the lockfile now carries the two `@emnapi` peer entries, verified by `npm ci` in a `node:22` container on npm 10.9.9 and 11.21.0. Blocked on credentials, not code: the machine's git credential authenticates as an account without write access to this repo. After that, the browser smoke still needs a Chrome binary and a `vite preview` step on the runner before `smoke:ui` can join the workflow.
 7. Then, and only then, Tailwind + shadcn.
 
 ---
