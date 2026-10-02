@@ -1,13 +1,20 @@
 {
-  "name": "temp-react-app",
+  "name": "grammax",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test",
+    "test": "node --test \"test/**/*.test.js\"",
+    "size": "node scripts/bundle-size.mjs",
+    "seed:content": "node scripts/seed-content.mjs",
+    "seed:check": "node scripts/seed-content.mjs --check",
+    "smoke:ui": "node scripts/smoke-ui.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

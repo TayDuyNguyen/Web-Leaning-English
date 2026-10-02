@@ -1,15 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+import { isSupabaseConfigured as evaluateSupabaseConfig } from './supabaseConfig';
 
 const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
 const supabaseAnonKey =
   (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
 
-const hasPlaceholderConfig =
-  supabaseUrl.includes('your-project-id') ||
-  supabaseAnonKey.includes('your-placeholder') ||
-  supabaseAnonKey === 'placeholder-key';
-
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey && !hasPlaceholderConfig);
+export const isSupabaseConfigured = evaluateSupabaseConfig(supabaseUrl, supabaseAnonKey);
 
 if (!isSupabaseConfigured) {
   console.warn(
@@ -17,7 +13,9 @@ if (!isSupabaseConfigured) {
   );
 }
 
+// Callers gate on isSupabaseConfigured before touching the network; the fallbacks
+// only exist so that `supabase` is never null for unauthenticated local-only mode.
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
+  isSupabaseConfigured ? supabaseUrl : 'https://placeholder.supabase.co',
+  isSupabaseConfigured ? supabaseAnonKey : 'placeholder-key'
 );

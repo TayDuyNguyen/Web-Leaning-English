@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'feature/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, test, build (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22.x is the hosting baseline; 24.x matches local development.
+        # Both are required: eslint 10 rejects Node 22.12 and below, and 23.x is
+        # unsupported by eslint's engine range. See package.json "engines".
+        node-version: ['22.x', '24.x']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install from lockfile
+        # npm's own exit is reported as an annotation because job logs need repo
+        # admin to read and annotations do not — the first four runs of this
+        # workflow died here and the reason was only visible in the UI.
+        run: |
+          LOG="${RUNNER_TEMP:-/tmp}/npm-ci.log"
+          set +e
+          npm ci --no-audit --no-fund >"$LOG" 2>&1
+          status=$?
+          set -e
+          cat "$LOG"
+          if [ "$status" -ne 0 ]; then
+            detail=$(grep -E '^npm (error|ERR!)' "$LOG" | head -10 | tr '\n' ' ' | cut -c1-800)
+            echo "::error title=npm ci failed (exit ${status})::${detail:-no npm error line captured}"
+            exit "$status"
+          fi
+
+      - name: Verify lockfile is in sync
+        run: npm ls --depth=0
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Content seed is in sync with src/data
+        # supabase/seed/content.sql is the artifact applied to the database. If it
+        # has drifted from its source, the deploy would seed lessons that no longer
+        # match the app's own fallback content.
+        run: npm run seed:check
+
+      - name: Production build
+        run: npm run build
+
+      - name: Bundle size report
+        # Report-only. Phase 1 moves src/data/* out of the bundle; at that point
+        # change this to `npm run size -- --strict` to enforce the budget.
+        run: npm run size
+
+      - name: Upload dist artifact
+        if: matrix.node-version == '22.x'
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+          if-no-files-found: error

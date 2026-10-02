@@ -654,7 +654,12 @@ export default function DataManager({
                   </pre>
                 </div>
                 <div className="vocab-json-actions">
-                  <button type="button" className="btn btn--outline-red" onClick={handleResetDefaultVocab}>Nạp bộ mặc định</button>
+                  {/* Replaces the active pack's items, so it is only offered once
+                      src/data/default-vocab.js actually ships words. With an empty
+                      list the click wiped the pack and synced the loss. */}
+                  {defaultVocab.length > 0 && (
+                    <button type="button" className="btn btn--outline-red" onClick={handleResetDefaultVocab}>Nạp bộ mặc định</button>
+                  )}
                   <button type="button" className="btn btn--outline-theme" disabled={!currentPack} onClick={() => handleResetProgress('vocab')}>Reset tiến độ</button>
                   <button type="button" className="btn btn--outline-cyan" disabled={!currentPack} onClick={() => handleExportItems('vocab')}>Xuất JSON</button>
                   <button type="button" className="btn btn--primary" onClick={() => handleImportItems('vocab')}>Nhập JSON</button>

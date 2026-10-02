@@ -32,7 +32,7 @@ export default function Header({
 }) {
   const handleNavClick = (tabId, e) => {
     e.preventDefault();
-    if (!canQuit()) return;
+    // setActiveTab runs the quit guard itself; guarding here too would ask twice.
     setActiveTab(tabId);
   };
 
