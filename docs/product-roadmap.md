@@ -125,7 +125,7 @@ The source brief was written against an assumed empty repo. Before it is used as
 
 The rewrite was approved, so the cost is stated plainly.
 
-**Do not delete the working app and rebuild it.** The current tree holds 5,805 lines of app code, 3,291 lines of CSS encoding real design decisions, 53 passing logic tests, and three game engines whose rules were clearly debugged (`gameRules.js` is pure and tested for exactly that reason). A big-bang rewrite discards all four assets simultaneously. Phase 0 added CI and Phase 1 added `seed:check` to it, but the pipeline still has **no browser step** — `npm run smoke:ui` covers 12 UI behaviours locally and is not yet running in CI, so nothing catches a UI regression automatically until Playwright or that script joins the pipeline.
+**Do not delete the working app and rebuild it.** ← *This argument was revisited on 2026-10-01 and the rebuild happened anyway; see Phase 8 in §5 and the note at the end of this file. The reasoning below is kept because most of it still holds — the assets it names were real, and the reason the reversal was tolerable is precisely that they were recoverable from git and the pure rules had been kept pure.* The current tree holds 5,805 lines of app code, 3,291 lines of CSS encoding real design decisions, 53 passing logic tests, and three game engines whose rules were clearly debugged (`gameRules.js` is pure and tested for exactly that reason). A big-bang rewrite discards all four assets simultaneously. Phase 0 added CI and Phase 1 added `seed:check` to it, but the pipeline still has **no browser step** — `npm run smoke:ui` covers 12 UI behaviours locally and is not yet running in CI, so nothing catches a UI regression automatically until Playwright or that script joins the pipeline.
 
 **Recommended shape:** build the TypeScript + Tailwind + shadcn tree alongside the existing one under `src/app/`, migrate one feature at a time behind a real router, and delete each legacy file only once its replacement passes Playwright. Both trees ship from one Vite app during the transition; the redirect map in §6.3 keeps old hash URLs alive.
 
@@ -155,6 +155,7 @@ The parallel path costs roughly a month more and is the only one that does not r
 | 5 | **Skills** | Listening, Reading, Speaking, Writing | Audio storage + transcripts; reading with tap-for-definition; writing submission | 3, 4 | 4-skill modules live | 4–8 wk |
 | 6 | **AI layer** | Intelligence on top of real data | Edge Functions `ai-tutor`, `generate-exercise`, `analyze-speaking`; `ai_conversations`, `ai_messages`, `ai_feedback`, `ai_generated_exercises` | 2, 3, 5 | AI answers cite the user's actual `user_mistakes` rows | 3–5 wk |
 | 7 | **Admin** | Content authoring at scale | `/admin/*` CRUD over Phase 1 tables, moderation, analytics | 1, 2 | Non-developers publish lessons | 3–4 wk |
+| 8 | **Game-first rebuild** | Make the game module, not the course, the unit of the product | ✅ content → games → player layers · ✅ game contract (`manifest.json` + pure `logic.js` + `index.jsx`) · ✅ generated `registry.js` with a CI drift gate · ✅ 4 vocabulary games over one shared word pool · ✅ relational player (`player_stats`, `game_results`, `word_mastery` + incrementing RPC) · ✅ review mode (rounds drawn from most-missed words) · ✅ wall-clock round timer · ✅ account panel · ⬜ grammar/listening/reading/pronunciation/VSTEP content types · ⬜ apply the migration to a real project | — | 4 games playable end-to-end in a browser with shared progress; adding a 5th touches no existing game | landed 2026-10-02 |
 
 Phases 1–2 are deliberately ahead of the rewrite: they are stack-neutral, they unblock everything, and they are the parts of the product the current stack cannot express.
 
@@ -285,13 +286,41 @@ Run against the live URL within 15 minutes of publishing.
 
 ## Appendix — reference material
 
+### Current (post-rebuild)
+
+- Architecture, games, content and player layers: `README.md`
+- Game contract and one worked example each: `src/games/*/manifest.json`, `src/games/*/logic.js`
+- Generated game registry + CI gate: `src/games/registry.js`, `scripts/build-registry.mjs`
+- Pure core (no React): `src/core/rng.js`, `src/core/scoring.js`, `src/core/manifest.js`, `src/core/selection.js`
+- Player stores over one reducer: `src/player/reducer.js`, `src/player/localStore.js`, `src/player/cloudStore.js`
+- Migration awaiting a project: `supabase/migrations/20261002000001_player_layer.sql`
+- Upstream GitHub: <https://github.com/TayDuyNguyen/Web-Leaning-English>
+
+### Removed by the 2026-10-01 rebuild
+
+These paths appear throughout §1–§7 above and no longer exist in the tree. They are recoverable
+from git at commit `f07d08d`.
+
+`src/pages/Dashboard.jsx`, `src/pages/TopicStudy.jsx`, `src/game-engines/*`, `src/data/*`,
+`src/lib/*`, `src/hooks/*`, `src/contexts/*`, `supabase/schema.sql`,
+`supabase/migrations/20260929000001_content_tables.sql`, `supabase/seed/content.sql`,
+`scripts/seed-content.mjs`, `scripts/smoke-ui.mjs`.
+
+### Still referenced, still valid
+
 - Source brief (superseded): `deployment.md`
 - Design reference: `www.codecademy.com-DESIGN.md`
-- Schema: `supabase/schema.sql`
-- Pure game logic + tests: `src/game-engines/gameRules.js`, `test/game-logic.test.js`
-- Content schema (pure, shared by seeder and browser): `src/lib/contentSchema.js`, `test/content-schema.test.js`
-- Content source seam (DB-first, bundle fallback): `src/lib/contentSource.js`, `src/data/content-modules.js`
-- Content migration + seed: `supabase/migrations/20260929000001_content_tables.sql`, `supabase/seed/content.sql`, `scripts/seed-content.mjs`
-- Browser smoke: `scripts/smoke-ui.mjs`
-- Storage abstraction (the seam that makes Phase 1 cheap): `src/lib/userStorage.js`
-- Upstream GitHub: <https://github.com/TayDuyNguyen/Web-Leaning-English>
+
+---
+
+## Note on the 2026-10-01 rebuild
+
+§4 argued against deleting the working app. The argument was sound on its own terms and was
+still overridden, for one reason: the thing it protected — a course surface over 30 topics — was
+93% empty, so the app's own UI was advertising content it did not have. A game module is what
+this product actually ships, so the architecture was re-cut around games instead of lessons.
+
+What made the reversal affordable is exactly what §4 said to preserve: the pure rules lived
+outside React and were testable, and git kept every deleted line recoverable. The three game
+engines were still lost, and rewriting them against the new contract is now open work (Phase 8
+row, "⬜" list).

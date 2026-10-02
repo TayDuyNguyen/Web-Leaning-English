@@ -28,6 +28,8 @@ difference between a game and a flashcard deck.
 | --- | --- | --- |
 | **Word Match** | Pair each English word with its Vietnamese meaning; the round auto-submits once every pair is placed | `contentTypes: ["vocabulary"]` |
 | **Word Scramble** | Reorder shuffled letters back into the word; submit enables once every box has text | `contentTypes: ["vocabulary"]` |
+| **Fill Blank** | The headword is blanked out of its own example sentence; choose from four words drawn from the same topic | `contentTypes: ["vocabulary"]` |
+| **Word Quiz** | Given the English word, choose its meaning from four; distractors prefer the same topic | `contentTypes: ["vocabulary"]` |
 
 Each game declares its own difficulties in `manifest.json`, and each difficulty carries
 `minItems` so the lobby can grey out a round the content pool cannot fill instead of starting
@@ -37,10 +39,20 @@ one that would throw.
 | --- | --- | --- | --- |
 | Word Match | 3 pairs, no timer | 5 pairs, 30 s | 8 pairs, 20 s |
 | Word Scramble | 4 words, no timer | 6 words, 45 s | 8 words, 30 s |
+| Fill Blank | 4 questions, no timer | 6 questions, 40 s | 8 questions, 30 s |
+| Word Quiz | 5 questions, no timer | 8 questions, 30 s | 12 questions, 20 s |
 
-**Content authored so far: 26 vocabulary items at A1** — `daily-life` (14) and `travel` (12).
-A2, B1, B2 and C1 have no files yet; the lobby labels those levels "chưa có" rather than
-hiding them.
+**Content authored so far: 74 vocabulary items** — A1 (26: `daily-life`, `travel`), A2 (24:
+`daily-activities`, `describing-places`), B1 (24: `work-study`, `opinions-abstract`). B2 and C1
+have no files yet; the lobby labels those levels "chưa có" rather than hiding them.
+
+### Review mode
+
+Because progress is stored as rows rather than one JSON blob, the lobby can ask "which words
+does this learner keep missing" and turn the answer into a round. Toggling **Ôn tập** narrows
+every game's pool to the twelve most-missed words, topped up with fresh words from the same
+level when the list is shorter than the difficulty needs. No game knows this is happening —
+the arena simply hands them a smaller pool.
 
 ---
 
@@ -109,10 +121,11 @@ persists to `localStorage`, and the header reads "Lưu cục bộ".
 ├── src/
 │   ├── main.jsx                entry
 │   ├── app/
-│   │   ├── App.jsx             owns route, level, seed and the player store
+│   │   ├── App.jsx             owns route, level, seed, review mode and the player store
 │   │   ├── Arena.jsx           runs one round: builds it, times it, grades it, hands the
 │   │   │                       GameResult to the player layer
 │   │   ├── Lobby.jsx           renders the registry — no game is hard-coded here
+│   │   ├── Account.jsx         sign in / sign up / sign out, honest about no-project
 │   │   ├── hashRoute.js        pure route parsing
 │   │   └── styles.css
 │   ├── core/
@@ -120,9 +133,10 @@ persists to `localStorage`, and the header reads "Lưu cục bộ".
 │   │   ├── contentSchema.js    vocabulary validation + the folder→level rule
 │   │   ├── manifest.js         game manifest validation
 │   │   ├── registry.js         joins the generated registry to the module map
-│   │   └── scoring.js          GameResult shape, XP, level curve, streak
+│   │   ├── scoring.js          GameResult shape, XP, level curve, streak
+│   │   └── selection.js        review-mode pool shrinking (pure, so node can test it)
 │   ├── content/
-│   │   ├── index.js            glob loader + poolFor({ contentTypes, level })
+│   │   ├── index.js            glob loader + poolFor / reviewPool
 │   │   └── vocabulary/<level>/<topic>.json
 │   ├── games/
 │   │   ├── registry.js         GENERATED — do not edit
@@ -160,13 +174,14 @@ starts a fresh round instead of replaying the old one.
 ## Testing
 
 ```bash
-npm test        # 71 tests
+npm test        # 99 tests
 ```
 
 Logic-only, no framework: seeded RNG replay, scoring maths and the level curve, manifest
-validation, vocabulary file integrity (unique ids **and** unique word text — a duplicated word
-would make a match board ambiguous), both games' round construction and grading, registry
-synchronisation, the player reducer, the local store and credential validation.
+validation, vocabulary file integrity (unique ids, unique word text, unique meanings, and every
+example containing its own headword), all four games' round construction and grading, pool
+selection for review mode, registry synchronisation, the player reducer, the local store and
+credential validation.
 
 `npm run smoke:ui` was removed together with the UI it drove. Browser verification is manual
 for now — see Known limitations.
@@ -175,22 +190,25 @@ for now — see Known limitations.
 
 ## Known limitations
 
-- **Cloud sync is unreachable from the UI.** `authFor()` exposes sign-in/sign-up/sign-out and
-  `cloudStore` is complete, but no screen renders an auth form, so every player is on
-  `localStorage` in practice. Applying `supabase/migrations/` and adding that form are the two
-  missing steps.
-- **A1 only** — 26 words. Nothing above A1 exists yet, so both games are limited to A1.
-- **Two games.** The previous build had TenseRush, SentenceBuilder and VocabBattle. They were
-  dropped in the 2026-10-02 rebuild and have not been rewritten against the new contract.
-- **The timeout auto-submit path has not been observed in a browser.** It runs from the clock's
-  own callback and its grading end is unit-tested (a blank answer scores wrong, not skipped),
-  but a backgrounded tab throttles `setInterval`, so the countdown never reached zero during
-  development. It needs one check in a visible tab.
-- **The countdown counts ticks, not wall-clock.** A throttled or suspended tab therefore gifts
-  extra time instead of ending the round.
-- **No production deployment.** Vercel builds branch previews for this repo (configured in its
+- **No Supabase project exists, so the cloud path is only half verified.** The account panel
+  renders correctly in both the unconfigured and configured-but-signed-out states (checked in a
+  browser, the latter against a throwaway env build), and `cloudStore` is written. What has
+  **not** been exercised is a real sign-in, a real write, or the `record_word_mastery` RPC —
+  none of that can be tested until a project is provisioned and the migration applied.
+- **Nothing is deployed.** Vercel builds branch previews for this repo (configured in its
   dashboard — there is no `vercel.json` in the tree), behind SSO. CI has been green on `main`
   and `develop` since 2026-10-02.
+- **Only four games, all vocabulary-shaped.** The previous build had TenseRush, SentenceBuilder
+  and VocabBattle; they were dropped in the 2026-10-01 rebuild and have not been rewritten
+  against the new contract. Grammar, listening, reading, pronunciation and VSTEP content do not
+  exist yet, so `contentTypes` other than `vocabulary` are unwritten.
+- **No browser-level automated test.** The bugs that mattered most in this rebuild — a
+  parameter-name mismatch that scored every round zero, a profile that never refreshed after a
+  save — passed all unit tests and were only visible by playing the app. Until component or
+  e2e tests land, manual browser verification is load-bearing, not optional.
+- **The seeded round is not addressable.** The round's seed is React state rather than part of
+  the URL, so reloading a `#play/...` address starts a fresh round instead of replaying the one
+  you were on.
 - **CI must be verified in a Linux container, not on a laptop.** `npm ci` on Windows passes
   against a lockfile the runner rejects, because the two npm builds disagree about which
   optional peer dependencies exist.
