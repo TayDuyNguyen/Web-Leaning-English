@@ -63,9 +63,9 @@ function GameCard({ game, level, onStart }) {
   );
 }
 
-export default function Lobby({ games, level, onChangeLevel, profile, authReady, onStart }) {
+export default function Lobby({ games, level, onChangeLevel, profile, authReady, weakCount, reviewMode, onToggleReview, onStart }) {
   const stats = progressOf(profile);
-  const weak = weakestWords(profile, 5).map((entry) => ({ ...entry, word: wordById.get(entry.wordId)?.word ?? entry.wordId }));
+  const weak = weakestWords(profile, 8).map((entry) => ({ ...entry, word: wordById.get(entry.wordId)?.word ?? entry.wordId }));
 
   return (
     <div className="lobby">
@@ -90,6 +90,11 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
 
       <section>
         <h2 className="section-title">Game</h2>
+        {reviewMode ? (
+          <p className="review-banner">
+            Đang bật <strong>Ôn tập</strong>: mỗi ván chỉ rút từ {weakCount} từ bạn hay sai nhất{weakCount < 4 ? ' (được bồi thêm từ mới để đủ số câu)' : ''}.
+          </p>
+        ) : null}
         <div className="game-grid">
           {games.map((game) => (
             <GameCard key={game.id} game={game} level={level} onStart={onStart} />
@@ -100,6 +105,9 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
       {weak.length > 0 ? (
         <section>
           <h2 className="section-title">Từ bạn hay sai</h2>
+          <button type="button" className={`difficulty-button${reviewMode ? ' is-active' : ''}`} onClick={() => onToggleReview(!reviewMode)}>
+            {reviewMode ? 'Tắt ôn tập' : 'Ôn tập 12 từ yếu'}
+          </button>
           <ul className="weak-list">
             {weak.map((entry) => (
               <li key={entry.wordId}>

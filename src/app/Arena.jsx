@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { poolFor } from '../content/index.js';
+import { poolFor, reviewPool } from '../content/index.js';
 import { buildGameResult } from '../core/scoring.js';
 import { pickDifficulty } from '../core/registry.js';
 
-export default function Arena({ game, level, difficultyId, seed, onNavigate, onRestart, onFinish }) {
+export default function Arena({ game, level, difficultyId, seed, reviewIds, onNavigate, onRestart, onFinish }) {
   const Play = game.Component;
   const difficulty = pickDifficulty(game.manifest, difficultyId);
 
   const pool = useMemo(
-    () => poolFor({ contentTypes: game.manifest.contentTypes, level }),
-    [game.manifest.contentTypes, level]
+    () =>
+      reviewIds?.length > 0
+        ? reviewPool({ contentTypes: game.manifest.contentTypes, level, preferredIds: reviewIds, minimum: difficulty.minItems })
+        : poolFor({ contentTypes: game.manifest.contentTypes, level }),
+    [game.manifest.contentTypes, level, reviewIds, difficulty.minItems]
   );
   const tooSmall = pool.length < difficulty.minItems;
 

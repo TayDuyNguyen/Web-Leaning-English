@@ -5,7 +5,7 @@ import Lobby from './Lobby.jsx';
 import { levelForXp } from '../core/scoring.js';
 import { findGame, registeredGames } from '../core/registry.js';
 import { randomSeed } from '../core/rng.js';
-import { emptyProfile } from '../player/reducer.js';
+import { emptyProfile, weakestWords } from '../player/reducer.js';
 import { createPlayerStore, loadSession } from '../player/index.js';
 import { hashForRoute, LOBBY, parseRoute } from './hashRoute.js';
 
@@ -20,6 +20,10 @@ export default function App() {
   const [level, setLevel] = useState('A1');
   const [profile, setProfile] = useState(emptyProfile);
   const [seed, setSeed] = useState(0);
+  const [reviewMode, setReviewMode] = useState(false);
+
+  const weakIds = useMemo(() => weakestWords(profile, 12).map((entry) => entry.wordId), [profile]);
+  const reviewIds = useMemo(() => (reviewMode && weakIds.length > 0 ? weakIds : undefined), [reviewMode, weakIds]);
 
   const { store, source } = useMemo(
     () => createPlayerStore({ env: import.meta.env, storage: window.localStorage, session }),
@@ -121,6 +125,7 @@ export default function App() {
             level={level}
             difficultyId={route.difficulty}
             seed={seed}
+            reviewIds={reviewIds}
             onNavigate={navigate}
             onRestart={replay}
             onFinish={finishRound}
@@ -132,6 +137,9 @@ export default function App() {
             onChangeLevel={setLevel}
             profile={profile}
             authReady={authReady}
+            weakCount={weakIds.length}
+            reviewMode={reviewMode}
+            onToggleReview={setReviewMode}
             onStart={startGame}
           />
         )}

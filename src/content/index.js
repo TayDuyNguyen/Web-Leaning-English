@@ -1,4 +1,5 @@
 import { levelFromFolder, validateVocabularyCollection } from '../core/contentSchema.js';
+import { reviewPool as selectReviewPool } from '../core/selection.js';
 
 // The level is taken from the directory, never from the item, so a file filed
 // under a2/ that still claims A1 words fails loudly instead of quietly
@@ -14,20 +15,6 @@ function parse(sourcePath, raw) {
 export const vocabulary = Object.entries(files)
   .sort(([a], [b]) => a.localeCompare(b))
   .flatMap(([path, raw]) => parse(path, raw));
-
-export const vocabularyByLevel = vocabulary.reduce((acc, item) => {
-  (acc[item.level] ??= []).push(item);
-  return acc;
-}, {});
-
-export const vocabularyByCategory = vocabulary.reduce((acc, item) => {
-  (acc[item.category] ??= []).push(item);
-  return acc;
-}, {});
-
-export function vocabularyFor({ level, category } = {}) {
-  return vocabulary.filter((item) => (level ? item.level === level : true) && (category ? item.category === category : true));
-}
 
 // A game declares which content types it eats, never which files. Adding
 // content/grammar/ later means adding one line here and every game that lists
@@ -53,3 +40,6 @@ export function poolFor({ contentTypes, level }) {
   return items;
 }
 
+export function reviewPool({ contentTypes, level, preferredIds, minimum }) {
+  return selectReviewPool({ items: poolFor({ contentTypes, level }), preferredIds, minimum });
+}
