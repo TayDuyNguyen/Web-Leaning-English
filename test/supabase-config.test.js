@@ -1,63 +1,43 @@
-import test from 'node:test';
 import assert from 'node:assert/strict';
+import test from 'node:test';
 
-import { isSupabaseConfigured } from '../src/lib/supabaseConfig.js';
+import { readSupabaseConfig } from '../src/player/supabaseConfig.js';
 
 const REAL_URL = 'https://abcd1234.supabase.co';
-const REAL_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.anonpayload.signature';
-const PUBLISHABLE_KEY = 'sb_publishable_D8pZ2xQ4vN7mKcJrTsYuWg';
+const REAL_KEY = 'sb_publishable_D8pZ2xQ4vN7mKcJrTsYuWg';
 
-test('accepts a real https project with a real key', () => {
-  assert.equal(isSupabaseConfigured(REAL_URL, REAL_KEY), true);
-  assert.equal(isSupabaseConfigured(REAL_URL, PUBLISHABLE_KEY), true);
+test('no environment means local-only', () => {
+  assert.equal(readSupabaseConfig(), null);
+  assert.equal(readSupabaseConfig({}), null);
 });
 
-test('rejects missing or blank credentials', () => {
-  assert.equal(isSupabaseConfigured('', REAL_KEY), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, ''), false);
-  assert.equal(isSupabaseConfigured(undefined, undefined), false);
-  assert.equal(isSupabaseConfigured(null, null), false);
-  assert.equal(isSupabaseConfigured('   ', '   '), false);
+test('a half-filled environment is not treated as configured', () => {
+  assert.equal(readSupabaseConfig({ VITE_SUPABASE_URL: REAL_URL }), null);
+  assert.equal(readSupabaseConfig({ VITE_SUPABASE_PUBLISHABLE_KEY: REAL_KEY }), null);
 });
 
-test('rejects the exact values shipped in .env.example', () => {
-  // Regression: the old detector looked for 'your-project-id' while .env.example
-  // shipped 'your-project.supabase.co', so a verbatim copy read as configured.
-  assert.equal(isSupabaseConfigured('https://your-project.supabase.co', 'your_publishable_key'), false);
+// Copying .env.example verbatim is the first thing a new contributor does; treating
+// its literals as real would point every request at a host that does not exist.
+test('the shipped placeholders keep the app offline', () => {
+  assert.equal(readSupabaseConfig({ VITE_SUPABASE_URL: 'https://your-project-id.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: 'your-placeholder-publishable-key' }), null);
 });
 
-test('rejects placeholder tokens in either field', () => {
-  assert.equal(isSupabaseConfigured('https://placeholder.supabase.co', REAL_KEY), false);
-  assert.equal(isSupabaseConfigured('https://example.supabase.co', REAL_KEY), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, 'placeholder-key'), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, 'your-placeholder'), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, 'changeme'), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, 'TODO_replace_me'), false);
+test('a real pair is accepted and trimmed', () => {
+  assert.deepEqual(
+    readSupabaseConfig({ VITE_SUPABASE_URL: `  ${REAL_URL}  `, VITE_SUPABASE_PUBLISHABLE_KEY: ` ${REAL_KEY} ` }),
+    { url: REAL_URL, key: REAL_KEY }
+  );
 });
 
-test('rejects keys too short to be real', () => {
-  assert.equal(isSupabaseConfigured(REAL_URL, 'x'), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, 'test'), false);
-  assert.equal(isSupabaseConfigured(REAL_URL, '1234567890123456789'), false);
+test('the legacy anon key works as a fallback', () => {
+  assert.equal(readSupabaseConfig({ VITE_SUPABASE_URL: REAL_URL, VITE_SUPABASE_ANON_KEY: REAL_KEY }).key, REAL_KEY);
+  assert.equal(
+    readSupabaseConfig({ VITE_SUPABASE_URL: REAL_URL, VITE_SUPABASE_PUBLISHABLE_KEY: REAL_KEY, VITE_SUPABASE_ANON_KEY: 'other' }).key,
+    REAL_KEY
+  );
 });
 
-test('rejects malformed or non-url values', () => {
-  assert.equal(isSupabaseConfigured('not-a-url', REAL_KEY), false);
-  assert.equal(isSupabaseConfigured('supabase.co', REAL_KEY), false);
-  assert.equal(isSupabaseConfigured('ftp://abcd1234.supabase.co', REAL_KEY), false);
-});
-
-test('rejects plain http for remote hosts but allows local development', () => {
-  assert.equal(isSupabaseConfigured('http://abcd1234.supabase.co', REAL_KEY), false);
-  assert.equal(isSupabaseConfigured('http://localhost:54321', REAL_KEY), true);
-  assert.equal(isSupabaseConfigured('http://127.0.0.1:54321', REAL_KEY), true);
-});
-
-test('trims surrounding whitespace before validating', () => {
-  assert.equal(isSupabaseConfigured(`  ${REAL_URL}\n`, `  ${REAL_KEY}  `), true);
-});
-
-test('ignores non-string inputs instead of throwing', () => {
-  assert.equal(isSupabaseConfigured(12345, { url: REAL_URL }), false);
-  assert.equal(isSupabaseConfigured({}, REAL_KEY), false);
+test('plain http and junk urls are rejected', () => {
+  assert.equal(readSupabaseConfig({ VITE_SUPABASE_URL: 'http://abcd.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: REAL_KEY }), null);
+  assert.equal(readSupabaseConfig({ VITE_SUPABASE_URL: 'not a url', VITE_SUPABASE_PUBLISHABLE_KEY: REAL_KEY }), null);
 });

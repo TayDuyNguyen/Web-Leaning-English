@@ -1,0 +1,13 @@
+{
+  "id": "word-scramble",
+  "name": "Word Scramble",
+  "summary": "Sắp xếp lại các chữ cái đã xáo trộn để thành từ đúng.",
+  "contentTypes": ["vocabulary"],
+  "levels": ["A1", "A2", "B1", "B2", "C1"],
+  "skills": ["vocabulary", "spelling"],
+  "difficulties": [
+    { "id": "easy", "label": "Dễ", "seconds": 0, "minItems": 4, "settings": { "words": 4 } },
+    { "id": "normal", "label": "Thường", "seconds": 45, "minItems": 6, "settings": { "words": 6 } },
+    { "id": "hard", "label": "Khó", "seconds": 30, "minItems": 8, "settings": { "words": 8 } }
+  ]
+}

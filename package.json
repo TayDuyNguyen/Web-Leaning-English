@@ -12,9 +12,8 @@
     "lint": "eslint .",
     "test": "node --test \"test/**/*.test.js\"",
     "size": "node scripts/bundle-size.mjs",
-    "seed:content": "node scripts/seed-content.mjs",
-    "seed:check": "node scripts/seed-content.mjs --check",
-    "smoke:ui": "node scripts/smoke-ui.mjs",
+    "registry": "node scripts/build-registry.mjs",
+    "registry:check": "node scripts/build-registry.mjs --check",
     "preview": "vite preview"
   },
   "dependencies": {

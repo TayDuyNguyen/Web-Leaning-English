@@ -1,10 +1,19 @@
 # GrammaX — Product Roadmap & Pre-Deployment Plan
 
-> **Document status:** living plan
-> **Repo:** `TayDuyNguyen/Web-Leaning-English` · branch `feature/setup-web` · worktree `setup/`
+> **Document status:** living plan — **measurements below are frozen at 2026-09-29 and describe
+> the app that was replaced on 2026-10-02.** See the note at the end of this file.
+> **Repo:** `TayDuyNguyen/Web-Leaning-English` · working branch `develop`
 > **Measured:** 2026-09-28 baseline against commit `c55cced`; re-measured 2026-09-29 after Phase 1
 > **Supersedes:** `deployment.md` (a ChatGPT-generated product brief; see §2 for its factual corrections)
 > **Stack decision:** approved rewrite to TypeScript + Tailwind + shadcn/ui (see §3–§4)
+>
+> **⚠ Superseded in part.** §1, §2, the §4 warning against a rewrite and the Phase 0–1 rows of
+> §5 describe the course-first app (`Dashboard`, `TopicStudy`, `src/data/`, three game engines,
+> `seed:check`). That app was deleted on 2026-10-02 and replaced by the content → games →
+> player architecture documented in `README.md`. The numbers here are still useful as history
+> and as the record of *why* the change was made; they are no longer measurements of the tree.
+> What has not changed: the gate logic in §6, the risk register in §7, and the fact that no
+> Supabase project exists.
 
 ---
 

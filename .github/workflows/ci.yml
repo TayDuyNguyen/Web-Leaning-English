@@ -70,11 +70,11 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Content seed is in sync with src/data
-        # supabase/seed/content.sql is the artifact applied to the database. If it
-        # has drifted from its source, the deploy would seed lessons that no longer
-        # match the app's own fallback content.
-        run: npm run seed:check
+      - name: Game registry is in sync with src/games
+        # src/games/registry.js is what the shipped lobby reads. A game directory
+        # that exists but is not registered would vanish from the app with no error
+        # anywhere, which is the most likely mistake when adding a game.
+        run: npm run registry:check
 
       - name: Production build
         run: npm run build

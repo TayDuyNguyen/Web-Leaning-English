@@ -1,0 +1,14 @@
+[
+  { "id": "a1_travel_001", "word": "ticket", "meaning_vi": "vé", "level": "A1", "category": "travel", "example": "I bought a ticket for the night train.", "collocations": ["plane ticket", "book a ticket"] },
+  { "id": "a1_travel_002", "word": "passport", "meaning_vi": "hộ chiếu", "level": "A1", "category": "travel", "example": "Show me your passport, please.", "collocations": ["renew your passport", "passport control"] },
+  { "id": "a1_travel_003", "word": "luggage", "meaning_vi": "hành lý", "level": "A1", "category": "travel", "example": "Our luggage went to the wrong city.", "collocations": ["leave your luggage", "luggage room"] },
+  { "id": "a1_travel_004", "word": "airport", "meaning_vi": "sân bay", "level": "A1", "category": "travel", "example": "The bus to the airport leaves at six.", "collocations": ["airport shuttle", "arrive at the airport"] },
+  { "id": "a1_travel_005", "word": "hotel", "meaning_vi": "khách sạn", "level": "A1", "category": "travel", "example": "We stayed in a small hotel by the sea.", "collocations": ["book a hotel", "hotel room"] },
+  { "id": "a1_travel_006", "word": "map", "meaning_vi": "bản đồ", "level": "A1", "category": "travel", "example": "We got lost because we had no map.", "collocations": ["city map", "on the map"] },
+  { "id": "a1_travel_007", "word": "address", "meaning_vi": "địa chỉ", "level": "A1", "category": "travel", "example": "Can you write down the hotel address?", "collocations": ["home address", "email address"] },
+  { "id": "a1_travel_008", "word": "suitcase", "meaning_vi": "va-li", "level": "A1", "category": "travel", "example": "My suitcase is too heavy to carry.", "collocations": ["pack a suitcase", "wheelie suitcase"] },
+  { "id": "a1_travel_009", "word": "departure", "meaning_vi": "giờ khởi hành", "level": "A1", "category": "travel", "example": "The departure time changed twice.", "collocations": ["departure gate", "time of departure"] },
+  { "id": "a1_travel_010", "word": "arrival", "meaning_vi": "sự đến nơi", "level": "A1", "category": "travel", "example": "We waited at the arrival gate for an hour.", "collocations": ["arrival time", "on arrival"] },
+  { "id": "a1_travel_011", "word": "journey", "meaning_vi": "chuyến đi", "level": "A1", "category": "travel", "example": "The journey to Da Nang took five hours.", "collocations": ["a long journey", "safe journey"] },
+  { "id": "a1_travel_012", "word": "reservation", "meaning_vi": "sự đặt chỗ trước", "level": "A1", "category": "travel", "example": "I have a reservation for two people.", "collocations": ["make a reservation", "cancel a reservation"] }
+]

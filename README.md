@@ -1,21 +1,61 @@
-# GrammaX
+# Grammax
 
-**Luyện TOEIC thông minh** — a Vietnamese-language English grammar and vocabulary trainer built with React + Vite. Lessons, drills and three arcade-style game modes, with progress that syncs to Supabase when you sign in and falls back to `localStorage` when you don't.
+**Game học tiếng Anh** — a Vietnamese-language English trainer built on React + Vite. Every game is an independent module reading from a shared content pool, and all of them write into one shared player profile. Progress lives in `localStorage` by default and moves to Supabase when a project is configured and a user is signed in.
 
 ![CI](https://github.com/TayDuyNguyen/Web-Leaning-English/actions/workflows/ci.yml/badge.svg)
 
 ---
 
-## What it does
+## The three layers
 
-| Area | Detail |
-| --- | --- |
-| **Chuyên đề (topics)** | 30 grammar topics are catalogued across 6 categories — verbs, sentence structures, parts of speech, clauses, vocabulary, review. **Only 2 currently have lesson content** (see Known limitations). Each populated topic has theory sections plus graded exercises; Chuyên đề 1 has 12 theory sections and 21 exercises. |
-| **Tốc độ ngữ pháp** (`TenseRush`) | Timed multiple choice. Hearts, combo multiplier, per-question explanations. |
-| **Xây câu** (`SentenceBuilder`) | Reorder word tiles into a grammatically correct sentence from a Vietnamese prompt. |
-| **Đấu từ vựng** (`VocabBattle`) | Vocabulary duel over a word pack. Needs at least 4 valid words. |
-| **Quản lý dữ liệu** (`DataManager`) | Create, rename, duplicate and delete your own question packs for all three game modes. |
-| **Cloud sync** | Optional. Sign in and profile, scores and packs move to Supabase under row-level security. |
+```
+content/   what is taught        vocabulary items graded A1–C1, one file per topic
+   |
+games/     how it is practised   each game reads the same items and asks differently
+   |
+player/    what happened         one reducer feeds XP, level, streak and word mastery
+```
+
+A game never stores knowledge of its own. `word-match` and `word-scramble` both draw from
+`src/content/vocabulary/`, so one word is practised several ways in one session — which is the
+difference between a game and a flashcard deck.
+
+---
+
+## What is playable today
+
+| Game | Mechanic | Content it consumes |
+| --- | --- | --- |
+| **Word Match** | Pair each English word with its Vietnamese meaning; the round auto-submits once every pair is placed | `contentTypes: ["vocabulary"]` |
+| **Word Scramble** | Reorder shuffled letters back into the word; submit enables once every box has text | `contentTypes: ["vocabulary"]` |
+
+Each game declares its own difficulties in `manifest.json`, and each difficulty carries
+`minItems` so the lobby can grey out a round the content pool cannot fill instead of starting
+one that would throw.
+
+| | Easy | Normal | Hard |
+| --- | --- | --- | --- |
+| Word Match | 3 pairs, no timer | 5 pairs, 30 s | 8 pairs, 20 s |
+| Word Scramble | 4 words, no timer | 6 words, 45 s | 8 words, 30 s |
+
+**Content authored so far: 26 vocabulary items at A1** — `daily-life` (14) and `travel` (12).
+A2, B1, B2 and C1 have no files yet; the lobby labels those levels "chưa có" rather than
+hiding them.
+
+---
+
+## Adding a game
+
+1. Create `src/games/<id>/` with `manifest.json`, `logic.js` and `index.jsx`. `logic.js` must
+   export `createRound({ items, difficulty, seed })` and `gradeRound({ round, answers })`, and
+   stay free of React so it runs under `node --test`.
+2. `npm run registry` — regenerate `src/games/registry.js` from the manifests.
+3. Add the component to `gameModules` in `src/games/index.js`.
+4. Write tests.
+
+No existing game is touched. `npm run registry:check` fails CI when a game directory exists but
+is not in the registry, and `test/registry.test.js` fails when a registered game is missing
+from the module map — the two ways a new game would otherwise vanish silently.
 
 ---
 
@@ -23,62 +63,24 @@
 
 **Node.js `^20.19.0`, `^22.13.0`, or `>=24.0.0`** — enforced via `engines` in `package.json`.
 
-Node 23 is deliberately excluded: ESLint 10 does not support it. Node 22.12 and below also fail, despite satisfying Vite.
-
-npm ships with Node, so nothing else is required.
+Node 23 is deliberately excluded: ESLint 10 does not support it. Node 22.12 and below also
+fail, despite satisfying Vite.
 
 ---
 
 ## Quick start
 
 ```bash
-npm install     # or `npm ci` for a reproducible install from the lockfile
+npm ci          # use npm ci, not npm install — see the warning below
 npm run dev     # http://localhost:5173
 ```
 
-**That's it — no `.env` needed.** See the next section.
+> **Install with `npm ci`.** `npm install` on Windows rewrites `package-lock.json` and drops
+> the `@emnapi/core` / `@emnapi/runtime` peer entries, which re-breaks `npm ci` on the Linux CI
+> runner. If `git status` shows the lockfile after an npm command, revert it before committing.
 
----
-
-## Running without Supabase (local-only mode)
-
-The app is **local-first by default**. With no `.env` file present:
-
-- every screen renders and every game is playable
-- theme, XP, scores and custom packs persist to `localStorage`
-- the header shows **"Đang lưu cục bộ"**
-- the sign-in dialog shows *"Supabase chưa được cấu hình…"* and cloud sync is skipped
-
-The only console output is one warning:
-
-```
-Supabase URL hoặc khóa công khai chưa được cấu hình đúng trong file .env.
-```
-
-This is a supported configuration, not a degraded state.
-
----
-
-## Enabling cloud sync
-
-1. Create a project at [supabase.com](https://supabase.com).
-2. In the SQL editor, run [`supabase/schema.sql`](supabase/schema.sql). It is idempotent — safe to re-run after the file changes.
-3. Copy the example env file and fill in real values:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   | Variable | Where to find it |
-   | --- | --- |
-   | `VITE_SUPABASE_URL` | Project Settings → Data API |
-   | `VITE_SUPABASE_PUBLISHABLE_KEY` | Project Settings → API Keys → Publishable key |
-
-4. Restart `npm run dev`. Vite inlines `VITE_*` values at build time, so a change requires a restart (and a redeploy in production).
-
-Validation lives in [`src/lib/supabaseConfig.js`](src/lib/supabaseConfig.js). Placeholder-looking values are rejected, so copying `.env.example` verbatim keeps you in local-only mode rather than pointing the app at a nonexistent project.
-
-> **Never** put the `service_role` key or any database password in a `VITE_*` variable — they compile into the public bundle.
+**No `.env` is needed.** The app is local-first: with no credentials it plays, scores and
+persists to `localStorage`, and the header reads "Lưu cục bộ".
 
 ---
 
@@ -91,98 +93,120 @@ Validation lives in [`src/lib/supabaseConfig.js`](src/lib/supabaseConfig.js). Pl
 | `npm run preview` | Serve the built `dist/` locally |
 | `npm run lint` | ESLint over `src`, `test` and `scripts` |
 | `npm test` | Node's built-in test runner — no test framework installed |
+| `npm run registry` | Regenerate `src/games/registry.js` from `src/games/*/manifest.json` |
+| `npm run registry:check` | Fail if that artifact has drifted from the game directories |
 | `npm run size` | Bundle report with budget checks (report-only; add `-- --strict` to enforce) |
-| `npm run seed:content` | Regenerate `supabase/seed/content.sql` from `src/data/` |
-| `npm run seed:check` | Fail if that artifact has drifted from the source data |
-| `npm run smoke:ui` | Browser smoke over Chrome DevTools Protocol — needs `npm run build && npm run preview` first |
 
 ---
 
 ## Project structure
 
 ```
-setup/
-├── .github/workflows/ci.yml   lint + test + seed:check + build + size on Node 22 and 24
-├── docs/
-│   └── product-roadmap.md     roadmap, pre-deployment gates, risk register
+├── .github/workflows/ci.yml    npm ci + lint + test + registry:check + build + size, Node 22/24
 ├── scripts/
-│   ├── bundle-size.mjs        budget reporter
-│   ├── seed-content.mjs       src/data → supabase/seed/content.sql generator
-│   └── smoke-ui.mjs           browser smoke (CDP, no test-runner dependency)
+│   ├── build-registry.mjs      src/games/*/manifest.json → src/games/registry.js
+│   └── bundle-size.mjs         budget reporter
 ├── src/
-│   ├── main.jsx               entry — mounts <AuthProvider><App/></AuthProvider>
-│   ├── App.jsx                composition only — wires the hooks below into the layout
-│   ├── index.css              the entire design system (~3,300 lines)
-│   ├── components/            Header, Footer, AuthModal, CustomSelect
-│   ├── contexts/              AuthContext (session, sign-in/up/out) + auth-context.js
-│   ├── hooks/
-│   │   ├── useAuth.js             context accessor
-│   │   ├── useHashRouting.js      dashboard / arena / topic view + back-forward
-│   │   ├── useTheme.js            theme state, `<html class="dark">`, persistence
-│   │   ├── useTopicScores.js      per-topic exercise results + persistence
-│   │   ├── useQuitGuard.js        Vocab Battle quit lock
-│   │   └── useCloudHydration.js   pull profile/scores from Supabase, offer local migration
-│   ├── lib/
-│   │   ├── supabaseClient.js  createClient + configured flag
-│   │   ├── supabaseConfig.js  pure credential validation (unit tested)
-│   │   ├── routes.js          pure hash-route parsing + push-vs-replace writes
-│   │   ├── contentSchema.js   pure topic ↔ row mapping (seeder + browser share it)
-│   │   ├── contentSource.js   content seam: Supabase first, bundle as fallback
-│   │   └── userStorage.js     local-first storage abstraction over both backends
-│   ├── pages/                 Dashboard, TopicStudy, GameArena
-│   ├── game-engines/          TenseRush, SentenceBuilder, VocabBattle,
-│   │                          GameLobby, DataManager + pure rules/sanitiser modules
-│   └── data/                  topic catalogue + bundled fallback content
-├── supabase/
-│   ├── schema.sql             8 tables, all RLS-scoped to the owning user
-│   ├── migrations/            content tables (Phase 1)
-│   └── seed/content.sql       generated lesson content — do not hand-edit
-└── test/                      *.test.js, run by `npm test`
+│   ├── main.jsx                entry
+│   ├── app/
+│   │   ├── App.jsx             owns route, level, seed and the player store
+│   │   ├── Arena.jsx           runs one round: builds it, times it, grades it, hands the
+│   │   │                       GameResult to the player layer
+│   │   ├── Lobby.jsx           renders the registry — no game is hard-coded here
+│   │   ├── hashRoute.js        pure route parsing
+│   │   └── styles.css
+│   ├── core/
+│   │   ├── rng.js              seeded generator; a round must be replayable
+│   │   ├── contentSchema.js    vocabulary validation + the folder→level rule
+│   │   ├── manifest.js         game manifest validation
+│   │   ├── registry.js         joins the generated registry to the module map
+│   │   └── scoring.js          GameResult shape, XP, level curve, streak
+│   ├── content/
+│   │   ├── index.js            glob loader + poolFor({ contentTypes, level })
+│   │   └── vocabulary/<level>/<topic>.json
+│   ├── games/
+│   │   ├── registry.js         GENERATED — do not edit
+│   │   ├── index.js            id → { Component, logic }
+│   │   └── <id>/{manifest.json,logic.js,index.jsx}
+│   └── player/
+│       ├── reducer.js          one pure applyResult() shared by both stores
+│       ├── localStore.js       localStorage
+│       ├── cloudStore.js       Supabase
+│       ├── supabaseConfig.js   pure credential validation
+│       ├── supabaseClient.js   memoised client
+│       └── index.js            picks a store, exposes authFor()
+├── supabase/migrations/        player_stats, game_results, word_mastery + record_word_mastery()
+└── test/                       *.test.js, run by `npm test`
 ```
 
-The pure logic is deliberately separated from React — `gameRules.js`, `gameDataUtils.js`, `gamePackUtils.js` and `contentSchema.js` import no React and touch no DOM or `window`. That is what makes them testable under `node --test`, and in `contentSchema.js`'s case what lets the Node seeder and the browser share one definition of a topic.
+Everything in `src/core/` and each game's `logic.js` imports no React and touches no DOM, which
+is what lets `node --test` cover the rules without a browser.
 
 ---
 
 ## Routing
 
-Hash-based, with no router library. Parsing and URL writing are pure functions in `src/lib/routes.js`, driven by `src/hooks/useHashRouting.js` for the view level; each view owns its own sub-route. Navigation pushes a history entry, while normalising the address to a view already on screen replaces it — so browser back undoes real navigations only.
-
 | URL | Screen |
 | --- | --- |
-| `#` or `#topics` | Dashboard — topic grid |
-| `#topic-<topicId>` | Topic study, first section |
-| `#topic-<topicId>/theory-<n>` | Specific theory section |
-| `#topic-<topicId>/exercise-<n>` | Specific exercise |
-| `#game` | Game lobby |
-| `#game/rush` | Tốc độ ngữ pháp |
-| `#game/scramble` | Xây câu |
-| `#game/battle` | Đấu từ vựng |
+| `#` | Lobby — profile, level picker, game list |
+| `#play/<gameId>` | Arena, first difficulty |
+| `#play/<gameId>/<difficultyId>` | Arena, chosen difficulty |
 
-Back and forward work. Leaving the lobby mid-**Vocab Battle** asks for confirmation first — that quit lock is set only by `VocabBattle.jsx`; the other two game modes navigate away freely.
+The round's random seed is React state, not part of the URL, so reloading a `#play/...` address
+starts a fresh round instead of replaying the old one.
 
 ---
 
 ## Testing
 
 ```bash
-npm test
+npm test        # 71 tests
 ```
 
-53 tests, no framework — Node's built-in runner against `test/**/*.test.js`. Coverage is logic-only: quiz resolution, combo and heart rules, sentence tokenising, pack sanitisation, data normalisation, topic ↔ row content mapping and the generated seed artifact, hash-route parsing and URL-write intent, and Supabase credential validation. On top of that, `npm run smoke:ui` drives a real headless Chrome over CDP (12 checks: deep links, back-button intent, lazy content chunks, answer scoring and persistence) — the browser half of the testing story until component/e2e tests land in Phase 4.
+Logic-only, no framework: seeded RNG replay, scoring maths and the level curve, manifest
+validation, vocabulary file integrity (unique ids **and** unique word text — a duplicated word
+would make a match board ambiguous), both games' round construction and grading, registry
+synchronisation, the player reducer, the local store and credential validation.
+
+`npm run smoke:ui` was removed together with the UI it drove. Browser verification is manual
+for now — see Known limitations.
 
 ---
 
 ## Known limitations
 
-- **28 of the 30 catalogued topics have no lesson content.** `src/data/content-modules.js` declares content for only two topics — `chuyen-de-thi-dong-tu` and `su-phoi-thi`. The dashboard still advertises all 30 with exercise counts, so clicking e.g. "Câu Bị Động — 0/12 Bài tập" lands on *"Không tìm thấy dữ liệu chuyên đề này."* It degrades cleanly (no console errors), but the catalogue over-promises: **24 of the advertised 271 exercises are reachable.**
-- **Lesson content still ships in the bundle until a Supabase project exists.** Phase 1 built the way out — content tables (`supabase/migrations/`), a generated seed (`supabase/seed/content.sql`), and `src/lib/contentSource.js` which reads from Supabase when configured and falls back to the bundle otherwise. The bundled content is now in per-topic lazy chunks rather than the entry chunk (first-load JS: 147.94 kB gzip), but **nothing is applied to a live database yet**, so editing a lesson without a redeploy is still not possible in practice.
-- **`src/data/default-vocab.js` is empty**, so the default vocabulary pack contains 0 words and Vocab Battle is unplayable until you create a pack in DataManager.
-- **No production environment of our own choosing.** Vercel builds branch previews for this repo (configured in the Vercel dashboard, not in the tree — there is no `vercel.json`) and its preview URLs sit behind SSO protection, but nothing is live for learners yet. CI runs but has never been green: its first four jobs died on a lockfile drift that a local `npm ci` cannot detect, because the laptop's npm and the runner's npm disagree about peer dependencies. `docker run --rm -v "$PWD":/w -w /w node:22 npm ci` is the check that actually matches the runner.
-- **Arena guard reverts still add history entries.** When a game is started without enough content, `GameArena.jsx` bounces the address back to `#game` by assigning `location.hash`, which pushes rather than replaces — so pressing back after a bounce replays it. The dashboard and topic views are handled correctly by `useHashRouting`.
-- **Progress is stored as an opaque JSON blob** (`topic_scores.scores_data`), so per-question analytics and an error notebook are not yet queryable. See **Phase 2**.
+- **Cloud sync is unreachable from the UI.** `authFor()` exposes sign-in/sign-up/sign-out and
+  `cloudStore` is complete, but no screen renders an auth form, so every player is on
+  `localStorage` in practice. Applying `supabase/migrations/` and adding that form are the two
+  missing steps.
+- **A1 only** — 26 words. Nothing above A1 exists yet, so both games are limited to A1.
+- **Two games.** The previous build had TenseRush, SentenceBuilder and VocabBattle. They were
+  dropped in the 2026-10-02 rebuild and have not been rewritten against the new contract.
+- **The timeout auto-submit path has not been observed in a browser.** It runs from the clock's
+  own callback and its grading end is unit-tested (a blank answer scores wrong, not skipped),
+  but a backgrounded tab throttles `setInterval`, so the countdown never reached zero during
+  development. It needs one check in a visible tab.
+- **The countdown counts ticks, not wall-clock.** A throttled or suspended tab therefore gifts
+  extra time instead of ending the round.
+- **No production deployment.** Vercel builds branch previews for this repo (configured in its
+  dashboard — there is no `vercel.json` in the tree), behind SSO. CI has been green on `main`
+  and `develop` since 2026-10-02.
+- **CI must be verified in a Linux container, not on a laptop.** `npm ci` on Windows passes
+  against a lockfile the runner rejects, because the two npm builds disagree about which
+  optional peer dependencies exist.
 
 Full plan, pre-deployment gates and risk register: **[docs/product-roadmap.md](docs/product-roadmap.md)**.
+
+---
+
+## The 2026-10-02 rebuild
+
+`docs/product-roadmap.md` §4 argued against deleting the working app and rebuilding it. That
+call was revisited and reversed: the course surface (`Dashboard`, `TopicStudy`) and 385 KB of
+bundled grammar content were removed in favour of a game-first architecture, on the grounds
+that a game module is this product's unit and the grammar course was 93% empty. The removed
+work is preserved in git at commit `f07d08d`. The roadmap's measurements predate the change
+and still describe the old app.
 
 ---
 
