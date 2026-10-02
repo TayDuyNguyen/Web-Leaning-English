@@ -1,10 +1,12 @@
 name: CI
 
 on:
+  # develop is the integration branch, so feature branches open PRs against it as
+  # well as against main; both bases need a gate.
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   push:
-    branches: [main, 'feature/**']
+    branches: [main, develop, 'feature/**']
   workflow_dispatch:
 
 permissions:

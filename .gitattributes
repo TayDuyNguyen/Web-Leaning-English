@@ -1,0 +1,5 @@
+# Without this, a Windows checkout with core.autocrlf=true rewrites every text file
+# to CRLF while scripts/seed-content.mjs emits LF, so `npm run seed:check` compares
+# two different line endings and fails on all 780 lines even with zero drift.
+# Pinning eol=lf makes the working tree match what the Linux CI runner checks out.
+* text=auto eol=lf
