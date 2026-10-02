@@ -24,6 +24,7 @@ export default function Arena({ game, level, difficultyId, seed, onNavigate, onR
   // get graded against the previous render's empty copy.
   const answersRef = useRef({});
   const startedAt = useRef(0);
+  const deadlineRef = useRef(0);
   const [status, setStatus] = useState('playing');
   const [result, setResult] = useState(null);
   const [review, setReview] = useState([]);
@@ -61,19 +62,22 @@ export default function Arena({ game, level, difficultyId, seed, onNavigate, onR
 
   useEffect(() => {
     startedAt.current = Date.now();
-  }, []);
+    deadlineRef.current = difficulty.seconds > 0 ? Date.now() + difficulty.seconds * 1000 : 0;
+  }, [difficulty.seconds]);
 
+  // The clock reads a wall-clock deadline instead of counting ticks, and polls it at
+  // 250 ms. Counting ticks silently gifts extra time to a throttled or suspended tab:
+  // Chrome drops a hidden page's interval to roughly one fire per minute, so a 30 s
+  // round can stretch into minutes and never end. Deriving the value from Date.now()
+  // means the round ends the moment the tab wakes up past its deadline.
   useEffect(() => {
     if (difficulty.seconds === 0 || status !== 'playing') return undefined;
-    let left = difficulty.seconds;
-    const id = setInterval(() => {
-      left -= 1;
-      setRemaining(Math.max(0, left));
-      if (left <= 0) {
-        clearInterval(id);
-        recordRef.current();
-      }
-    }, 1000);
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000));
+      setRemaining(left);
+      if (left === 0) recordRef.current();
+    };
+    const id = setInterval(tick, 250);
     return () => clearInterval(id);
   }, [difficulty.seconds, status]);
 
