@@ -56,12 +56,33 @@ test('word text is unique across the whole content tree', () => {
   }
 });
 
+// word-quiz offers meanings as the options, so two items sharing a meaning would put
+// two equally-correct tiles on screen and mark one of them wrong.
+test('meaning text is unique across the whole content tree', () => {
+  const seen = new Map();
+  for (const item of items) {
+    const key = item.meaningVi.toLowerCase().trim();
+    assert.ok(!seen.has(key), `"${item.meaningVi}" is the meaning of both ${seen.get(key)} and ${item.id}`);
+    seen.set(key, item.id);
+  }
+});
+
 test('every item carries the fields the games read', () => {
   for (const item of items) {
     assert.ok(item.word.length > 1, `${item.id}: word too short to scramble`);
     assert.ok(item.meaningVi.length > 0);
     assert.ok(['A1', 'A2', 'B1', 'B2', 'C1'].includes(item.level));
   }
+});
+
+// fill-blank builds its sentence by blanking the headword out of `example`, so an
+// example that never contained the word would produce a sentence with no gap.
+test('every example sentence contains its own headword', () => {
+  const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const offenders = items
+    .filter((item) => !new RegExp(`\\b${escape(item.word)}\\w*\\b`, 'i').test(item.example))
+    .map((item) => `${item.id} (${item.word}): "${item.example}"`);
+  assert.deepEqual(offenders, [], 'example sentences must use the word they teach');
 });
 
 test('a file whose items disagree with its folder is rejected', () => {

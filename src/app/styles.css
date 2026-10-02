@@ -124,3 +124,19 @@ code { background: var(--bg-raised); padding: 0 4px; border-radius: 4px; }
 .result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 .empty-state { color: var(--muted); background: var(--bg-panel); border: 1px dashed var(--line); border-radius: 12px; padding: 18px; }
+
+.fill-board, .quiz-board { display: flex; flex-direction: column; gap: 14px; }
+.fill-card, .quiz-card { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+.fill-sentence { margin: 0; font-size: 17px; }
+.fill-hint { margin: 4px 0 12px; color: var(--muted); font-size: 13px; }
+.fill-number, .quiz-number { display: inline-block; min-width: 22px; color: var(--muted); font-size: 13px; }
+
+.fill-options, .quiz-options { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.fill-option, .quiz-option {
+  background: var(--bg-raised); color: var(--text); border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px 12px; font-size: 15px; text-align: left; cursor: pointer;
+}
+.fill-option.is-selected, .quiz-option.is-selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(91, 140, 255, .35); }
+
+.quiz-question { margin: 0 0 12px; font-size: 17px; }
+.quiz-question strong { font-size: 19px; }

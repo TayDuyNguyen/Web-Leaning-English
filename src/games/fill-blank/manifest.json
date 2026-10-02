@@ -1,0 +1,13 @@
+{
+  "id": "fill-blank",
+  "name": "Fill Blank",
+  "summary": "Điền từ còn thiếu vào chỗ trống trong câu ví dụ.",
+  "contentTypes": ["vocabulary"],
+  "levels": ["A1", "A2", "B1", "B2", "C1"],
+  "skills": ["vocabulary", "reading"],
+  "difficulties": [
+    { "id": "easy", "label": "Dễ", "seconds": 0, "minItems": 4, "settings": { "questions": 4, "options": 4 } },
+    { "id": "normal", "label": "Thường", "seconds": 40, "minItems": 6, "settings": { "questions": 6, "options": 4 } },
+    { "id": "hard", "label": "Khó", "seconds": 30, "minItems": 8, "settings": { "questions": 8, "options": 4 } }
+  ]
+}

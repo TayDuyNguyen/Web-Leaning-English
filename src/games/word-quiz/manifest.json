@@ -1,0 +1,13 @@
+{
+  "id": "word-quiz",
+  "name": "Word Quiz",
+  "summary": "Chọn nghĩa tiếng Việt đúng cho từ tiếng Anh được đưa ra.",
+  "contentTypes": ["vocabulary"],
+  "levels": ["A1", "A2", "B1", "B2", "C1"],
+  "skills": ["vocabulary"],
+  "difficulties": [
+    { "id": "easy", "label": "Dễ", "seconds": 0, "minItems": 5, "settings": { "questions": 5, "options": 4 } },
+    { "id": "normal", "label": "Thường", "seconds": 30, "minItems": 8, "settings": { "questions": 8, "options": 4 } },
+    { "id": "hard", "label": "Khó", "seconds": 20, "minItems": 12, "settings": { "questions": 12, "options": 4 } }
+  ]
+}

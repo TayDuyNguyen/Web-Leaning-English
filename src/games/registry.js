@@ -8,6 +8,57 @@ export const generatedBy = 'scripts/build-registry.mjs';
 
 export const games = [
   {
+    "id": "fill-blank",
+    "name": "Fill Blank",
+    "summary": "Điền từ còn thiếu vào chỗ trống trong câu ví dụ.",
+    "contentTypes": [
+      "vocabulary"
+    ],
+    "levels": [
+      "A1",
+      "A2",
+      "B1",
+      "B2",
+      "C1"
+    ],
+    "skills": [
+      "vocabulary",
+      "reading"
+    ],
+    "difficulties": [
+      {
+        "seconds": 0,
+        "minItems": 4,
+        "settings": {
+          "questions": 4,
+          "options": 4
+        },
+        "id": "easy",
+        "label": "Dễ"
+      },
+      {
+        "seconds": 40,
+        "minItems": 6,
+        "settings": {
+          "questions": 6,
+          "options": 4
+        },
+        "id": "normal",
+        "label": "Thường"
+      },
+      {
+        "seconds": 30,
+        "minItems": 8,
+        "settings": {
+          "questions": 8,
+          "options": 4
+        },
+        "id": "hard",
+        "label": "Khó"
+      }
+    ]
+  },
+  {
     "id": "word-match",
     "name": "Word Match",
     "summary": "Nối mỗi từ tiếng Anh với nghĩa tiếng Việt của nó.",
@@ -48,6 +99,56 @@ export const games = [
         "minItems": 8,
         "settings": {
           "pairs": 8
+        },
+        "id": "hard",
+        "label": "Khó"
+      }
+    ]
+  },
+  {
+    "id": "word-quiz",
+    "name": "Word Quiz",
+    "summary": "Chọn nghĩa tiếng Việt đúng cho từ tiếng Anh được đưa ra.",
+    "contentTypes": [
+      "vocabulary"
+    ],
+    "levels": [
+      "A1",
+      "A2",
+      "B1",
+      "B2",
+      "C1"
+    ],
+    "skills": [
+      "vocabulary"
+    ],
+    "difficulties": [
+      {
+        "seconds": 0,
+        "minItems": 5,
+        "settings": {
+          "questions": 5,
+          "options": 4
+        },
+        "id": "easy",
+        "label": "Dễ"
+      },
+      {
+        "seconds": 30,
+        "minItems": 8,
+        "settings": {
+          "questions": 8,
+          "options": 4
+        },
+        "id": "normal",
+        "label": "Thường"
+      },
+      {
+        "seconds": 20,
+        "minItems": 12,
+        "settings": {
+          "questions": 12,
+          "options": 4
         },
         "id": "hard",
         "label": "Khó"
