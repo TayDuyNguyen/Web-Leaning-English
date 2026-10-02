@@ -1,10 +1,16 @@
 name: CI
 
 on:
+  # pull_request.branches filters on the BASE branch, so every head name a developer
+  # might pick (fix/…, docs/…, spike/…) is already gated by its PR — listing prefixes
+  # under push would be an endless game. push stays on the two long-lived branches:
+  # a branch with an open PR would otherwise run the matrix twice, because push and
+  # pull_request carry different github.ref and the concurrency group below cannot
+  # dedupe them.
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   push:
-    branches: [main, 'feature/**']
+    branches: [main, develop]
   workflow_dispatch:
 
 permissions:
