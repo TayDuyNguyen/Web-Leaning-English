@@ -142,3 +142,10 @@ code { background: var(--bg-raised); padding: 0 4px; border-radius: 4px; }
 
 .quiz-question { margin: 0 0 12px; font-size: 17px; }
 .quiz-question strong { font-size: 19px; }
+
+.account { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.account-note { margin: 0; color: var(--muted); font-size: 14px; }
+.account-state { margin: 0; }
+.account-error { margin: 0; color: var(--bad); font-size: 14px; }
+.account-fields { display: flex; gap: 10px; flex-wrap: wrap; }
+.account-fields .scramble-input { flex: 1; min-width: 200px; }

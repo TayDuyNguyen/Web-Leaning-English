@@ -1,3 +1,4 @@
+import Account from './Account.jsx';
 import { LEVELS } from '../core/contentSchema.js';
 import { poolFor, vocabulary } from '../content/index.js';
 import { progress as progressOf, weakestWords } from '../player/reducer.js';
@@ -63,7 +64,7 @@ function GameCard({ game, level, onStart }) {
   );
 }
 
-export default function Lobby({ games, level, onChangeLevel, profile, authReady, weakCount, reviewMode, onToggleReview, onStart }) {
+export default function Lobby({ games, level, onChangeLevel, profile, authReady, weakCount, reviewMode, onToggleReview, account, onStart }) {
   const stats = progressOf(profile);
   const weak = weakestWords(profile, 8).map((entry) => ({ ...entry, word: wordById.get(entry.wordId)?.word ?? entry.wordId }));
 
@@ -106,7 +107,7 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
         <section>
           <h2 className="section-title">Từ bạn hay sai</h2>
           <button type="button" className={`difficulty-button${reviewMode ? ' is-active' : ''}`} onClick={() => onToggleReview(!reviewMode)}>
-            {reviewMode ? 'Tắt ôn tập' : 'Ôn tập 12 từ yếu'}
+            {reviewMode ? 'Tắt ôn tập' : `Ôn tập ${weakCount} từ yếu`}
           </button>
           <ul className="weak-list">
             {weak.map((entry) => (
@@ -117,6 +118,11 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
           </ul>
         </section>
       ) : null}
+
+      <section>
+        <h2 className="section-title">Tài khoản</h2>
+        <Account {...account} />
+      </section>
     </div>
   );
 }

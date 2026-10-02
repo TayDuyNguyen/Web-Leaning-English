@@ -6,7 +6,7 @@ import { levelForXp } from '../core/scoring.js';
 import { findGame, registeredGames } from '../core/registry.js';
 import { randomSeed } from '../core/rng.js';
 import { emptyProfile, weakestWords } from '../player/reducer.js';
-import { createPlayerStore, loadSession } from '../player/index.js';
+import { createPlayerStore, authFor, loadSession } from '../player/index.js';
 import { hashForRoute, LOBBY, parseRoute } from './hashRoute.js';
 
 function todayIso() {
@@ -98,6 +98,41 @@ export default function App() {
     [store]
   );
 
+  const auth = useMemo(() => authFor(import.meta.env), []);
+  const [authBusy, setAuthBusy] = useState(false);
+  const [authError, setAuthError] = useState(null);
+
+  useEffect(() => {
+    if (!auth) return undefined;
+    return auth.onChange((next) => setSession(next));
+  }, [auth]);
+
+  const runAuth = useCallback((action) => {
+    setAuthBusy(true);
+    setAuthError(null);
+    return action()
+      .then((next) => {
+        if (next) setSession(next);
+        else setAuthError('Cần xác minh email trước khi đăng nhập.');
+      })
+      .catch((error) => setAuthError(error?.message ?? String(error)))
+      .finally(() => setAuthBusy(false));
+  }, []);
+
+  const account = {
+    source,
+    email: session?.user?.email ?? null,
+    busy: authBusy,
+    error: authError,
+    onSignIn: (email, password) => runAuth(() => auth.signIn(email, password)),
+    onSignUp: (email, password) => runAuth(() => auth.signUp(email, password)),
+    onSignOut: () =>
+      runAuth(async () => {
+        await auth.signOut();
+        setSession(null);
+      }),
+  };
+
   const playing = route.view === 'play' ? findGame(route.game) : null;
   const progress = levelForXp(profile.xp);
 
@@ -140,6 +175,7 @@ export default function App() {
             weakCount={weakIds.length}
             reviewMode={reviewMode}
             onToggleReview={setReviewMode}
+            account={account}
             onStart={startGame}
           />
         )}
