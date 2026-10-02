@@ -56,6 +56,26 @@ the arena simply hands them a smaller pool.
 
 ---
 
+## Design
+
+[`DESIGN.md`](DESIGN.md) is the visual contract: Grammax Editorial Monochrome, adapted from
+the Awwwards Swiss/editorial system. Warm light-grey canvas `#F8F8F8`, ink `#222222`, one
+signal orange, Inter Tight throughout, 8px rhythm, and depth from tonal layering rather than
+shadow.
+
+It is machine-checked, not aspirational. `test/design-tokens.test.js` parses the DESIGN.md
+frontmatter and asserts, in both directions, that every colour, radius and spacing token exists
+in `src/app/styles.css` with the same value — and that the stylesheet invents none the document
+does not name. Three semantic rules are enforced too: CEFR tints may only appear on level
+chips, the `correct` green only on graded answers, and signal orange is never a background
+fill. Change one file without the other and CI fails.
+
+Two deliberate departures from the source system are documented in the file with their reasons:
+one added hue (a quiz must distinguish right from wrong faster than ink on ink can), and the
+category axis re-cut from content topics to CEFR levels.
+
+---
+
 ## Adding a game
 
 1. Create `src/games/<id>/` with `manifest.json`, `logic.js` and `index.jsx`. `logic.js` must
@@ -174,14 +194,14 @@ starts a fresh round instead of replaying the old one.
 ## Testing
 
 ```bash
-npm test        # 99 tests
+npm test        # 109 tests
 ```
 
 Logic-only, no framework: seeded RNG replay, scoring maths and the level curve, manifest
 validation, vocabulary file integrity (unique ids, unique word text, unique meanings, and every
 example containing its own headword), all four games' round construction and grading, pool
-selection for review mode, registry synchronisation, the player reducer, the local store and
-credential validation.
+selection for review mode, registry synchronisation, the DESIGN.md token contract, the player
+reducer, the local store and credential validation.
 
 `npm run smoke:ui` was removed together with the UI it drove. Browser verification is manual
 for now — see Known limitations.

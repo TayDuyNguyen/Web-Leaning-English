@@ -309,7 +309,8 @@ from git at commit `f07d08d`.
 ### Still referenced, still valid
 
 - Source brief (superseded): `deployment.md`
-- Design reference: `www.codecademy.com-DESIGN.md`
+- Design system (machine-checked): `DESIGN.md`, enforced by `test/design-tokens.test.js`
+- Earlier design reference, now superseded by `DESIGN.md`: `www.codecademy.com-DESIGN.md`
 
 ---
 
