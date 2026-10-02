@@ -1,0 +1,14 @@
+[
+  { "id": "b1_abs_001", "word": "advantage", "meaning_vi": "lợi thế", "level": "B1", "category": "opinions-abstract", "example": "Living near campus is a big advantage.", "collocations": ["an obvious advantage", "take advantage of"] },
+  { "id": "b1_abs_002", "word": "disadvantage", "meaning_vi": "bất lợi", "level": "B1", "category": "opinions-abstract", "example": "The main disadvantage is the long commute.", "collocations": ["a serious disadvantage", "the disadvantage of"] },
+  { "id": "b1_abs_003", "word": "behaviour", "meaning_vi": "hành vi", "level": "B1", "category": "opinions-abstract", "example": "The teacher praised the children's behaviour.", "collocations": ["strange behaviour", "behave with respect"] },
+  { "id": "b1_abs_004", "word": "attitude", "meaning_vi": "thái độ", "level": "B1", "category": "opinions-abstract", "example": "She has a positive attitude towards feedback.", "collocations": ["a can-do attitude", "attitude to something"] },
+  { "id": "b1_abs_005", "word": "awareness", "meaning_vi": "sự nhận biết", "level": "B1", "category": "opinions-abstract", "example": "The campaign raised awareness of online scams.", "collocations": ["raise awareness of", "public awareness"] },
+  { "id": "b1_abs_006", "word": "challenge", "meaning_vi": "thử thách", "level": "B1", "category": "opinions-abstract", "example": "Learning a new language is a real challenge.", "collocations": ["face a challenge", "a demanding challenge"] },
+  { "id": "b1_abs_007", "word": "consequence", "meaning_vi": "hệ quả", "level": "B1", "category": "opinions-abstract", "example": "Missing the deadline had serious consequences.", "collocations": ["as a consequence", "face the consequences"] },
+  { "id": "b1_abs_008", "word": "contribution", "meaning_vi": "sự đóng góp", "level": "B1", "category": "opinions-abstract", "example": "His contribution to the project was valuable.", "collocations": ["make a contribution", "a key contribution"] },
+  { "id": "b1_abs_009", "word": "evidence", "meaning_vi": "bằng chứng", "level": "B1", "category": "opinions-abstract", "example": "There is little evidence that the rule works.", "collocations": ["strong evidence", "on the evidence of"] },
+  { "id": "b1_abs_010", "word": "opportunity", "meaning_vi": "cơ hội", "level": "B1", "category": "opinions-abstract", "example": "The internship gave her a chance to practise speaking.", "collocations": ["seize the opportunity", "an opportunity to do something"] },
+  { "id": "b1_abs_011", "word": "preference", "meaning_vi": "sự thích hơn", "level": "B1", "category": "opinions-abstract", "example": "I have a preference for morning classes.", "collocations": ["have a preference for", "a matter of preference"] },
+  { "id": "b1_abs_012", "word": "procedure", "meaning_vi": "quy trình", "level": "B1", "category": "opinions-abstract", "example": "Follow the safety procedure without skipping steps.", "collocations": ["a standard procedure", "apply the procedure"] }
+]

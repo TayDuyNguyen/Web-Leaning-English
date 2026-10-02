@@ -1,0 +1,14 @@
+[
+  { "id": "a2_desc_001", "word": "crowded", "meaning_vi": "đông đúc", "level": "A2", "category": "describing-places", "example": "The market is crowded at the weekend.", "collocations": ["a crowded street", "too crowded"] },
+  { "id": "a2_desc_002", "word": "noisy", "meaning_vi": "ồn ào", "level": "A2", "category": "describing-places", "example": "Our street is noisy in the morning.", "collocations": ["a noisy neighbour", "noisy traffic"] },
+  { "id": "a2_desc_003", "word": "quiet", "meaning_vi": "yên tĩnh", "level": "A2", "category": "describing-places", "example": "The library was dark and quiet.", "collocations": ["a quiet village", "keep quiet"] },
+  { "id": "a2_desc_004", "word": "friendly", "meaning_vi": "thân thiện", "level": "A2", "category": "describing-places", "example": "The people in this town are friendly.", "collocations": ["a friendly welcome", "friendly to visitors"] },
+  { "id": "a2_desc_005", "word": "polite", "meaning_vi": "lịch sự", "level": "A2", "category": "describing-places", "example": "He was very polite to the driver.", "collocations": ["a polite reply", "be polite to someone"] },
+  { "id": "a2_desc_006", "word": "generous", "meaning_vi": "hào phóng", "level": "A2", "category": "describing-places", "example": "They were generous with their time.", "collocations": ["a generous offer", "generous to strangers"] },
+  { "id": "a2_desc_007", "word": "ancient", "meaning_vi": "cổ xưa", "level": "A2", "category": "describing-places", "example": "We visited an ancient temple near Hue.", "collocations": ["an ancient city", "ancient history"] },
+  { "id": "a2_desc_008", "word": "modern", "meaning_vi": "hiện đại", "level": "A2", "category": "describing-places", "example": "The museum has a modern glass roof.", "collocations": ["a modern building", "modern art"] },
+  { "id": "a2_desc_009", "word": "peaceful", "meaning_vi": "yên bình", "level": "A2", "category": "describing-places", "example": "The village is quiet and peaceful.", "collocations": ["a peaceful morning", "peaceful countryside"] },
+  { "id": "a2_desc_010", "word": "convenient", "meaning_vi": "tiện lợi", "level": "A2", "category": "describing-places", "example": "The flat is convenient for the station.", "collocations": ["a convenient time", "it is convenient to"] },
+  { "id": "a2_desc_011", "word": "dangerous", "meaning_vi": "nguy hiểm", "level": "A2", "category": "describing-places", "example": "Swimming here is dangerous at night.", "collocations": ["a dangerous road", "look dangerous"] },
+  { "id": "a2_desc_012", "word": "comfortable", "meaning_vi": "thoải mái", "level": "A2", "category": "describing-places", "example": "The chairs in the lobby are comfortable.", "collocations": ["a comfortable seat", "feel comfortable"] }
+]

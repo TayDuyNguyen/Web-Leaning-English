@@ -24,7 +24,17 @@ function loadAll() {
 const items = loadAll();
 
 test('there is enough content to play with', () => {
-  assert.ok(items.length >= 20, `only ${items.length} vocabulary items authored`);
+  assert.ok(items.length >= 60, `only ${items.length} vocabulary items authored`);
+});
+
+// Hard and normal difficulties need 6-8 items from a single level, so a level with a
+// handful of words would grey out most of the lobby without anyone noticing.
+test('each authored level has enough words for the hardest difficulty', () => {
+  const byLevel = new Map();
+  for (const item of items) byLevel.set(item.level, (byLevel.get(item.level) ?? 0) + 1);
+  for (const [level, count] of byLevel) {
+    assert.ok(count >= 12, `level ${level} has only ${count} words`);
+  }
 });
 
 test('ids are unique across the whole content tree', () => {
