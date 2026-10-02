@@ -17,7 +17,7 @@ function LevelPicker({ level, onChangeLevel }) {
         <button
           key={entry}
           type="button"
-          className={`level-chip${level === entry ? ' is-active' : ''}`}
+          className={`level-chip level-chip--${entry.toLowerCase()}${level === entry ? ' is-active' : ''}`}
           onClick={() => onChangeLevel(entry)}
         >
           {entry}
