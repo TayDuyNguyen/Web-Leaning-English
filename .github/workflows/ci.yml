@@ -76,6 +76,11 @@ jobs:
         # anywhere, which is the most likely mistake when adding a game.
         run: npm run registry:check
 
+      - name: Roadmap workbook is in sync with data/roadmap
+        # English_Roadmap_From_Zero.xlsx is the learner-facing tracker. If it drifts from
+        # the JSON, the 180-day plan, the word list and the app's games disagree.
+        run: npm run roadmap:check
+
       - name: Production build
         run: npm run build
 

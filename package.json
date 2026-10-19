@@ -14,6 +14,8 @@
     "size": "node scripts/bundle-size.mjs",
     "registry": "node scripts/build-registry.mjs",
     "registry:check": "node scripts/build-registry.mjs --check",
+    "roadmap": "node scripts/build-roadmap.mjs",
+    "roadmap:check": "node scripts/build-roadmap.mjs --check",
     "preview": "vite preview"
   },
   "dependencies": {

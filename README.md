@@ -54,6 +54,26 @@ every game's pool to the twelve most-missed words, topped up with fresh words fr
 level when the list is shorter than the difficulty needs. No game knows this is happening —
 the arena simply hands them a smaller pool.
 
+### The 180-day workbook
+
+`English_Roadmap_From_Zero.xlsx` is a **generated view** of `data/roadmap/`, the same way
+`src/games/registry.js` is a generated view of the game manifests. It tracks the path
+Mất gốc → A0 → A1 → A2 → B1 over 180 dated days and answers one question on screen:
+**hôm nay học gì**.
+
+| Sheet | Role | Typed by hand? |
+| --- | --- | --- |
+| TODAY | resolves `TODAY()` into the day's topic, grammar point, 14 new words and 12 words due for review | no |
+| PLAN_180 | the 180 dated rows: curriculum topic, word ids, four skills, minutes, test | no |
+| PROGRESS | the daily log — the only place a day is marked done | Completed + six skill scores |
+| VOCAB / DUE | the word pool and the Leitner queue (1-1-2-4-7-14) over it | mastery + last review date |
+| GRAMMAR / CURRICULUM / EXERCISES / RESOURCES | content | mastery + last studied |
+
+The word pool is merged with `src/content/vocabulary/`, so a word the games teach and the
+workbook tracks is one record. Regenerate with `npm run roadmap`; `npm run roadmap:check`
+fails CI when the two have drifted. Details and measurements:
+**[docs/english-180-plan.md](docs/english-180-plan.md)**.
+
 ---
 
 ## Design
@@ -127,6 +147,8 @@ persists to `localStorage`, and the header reads "Lưu cục bộ".
 | `npm test` | Node's built-in test runner — no test framework installed |
 | `npm run registry` | Regenerate `src/games/registry.js` from `src/games/*/manifest.json` |
 | `npm run registry:check` | Fail if that artifact has drifted from the game directories |
+| `npm run roadmap` | Regenerate `English_Roadmap_From_Zero.xlsx` from `data/roadmap/` |
+| `npm run roadmap:check` | Fail if that workbook has drifted from `data/roadmap/` |
 | `npm run size` | Bundle report with budget checks (report-only; add `-- --strict` to enforce) |
 
 ---
@@ -134,9 +156,12 @@ persists to `localStorage`, and the header reads "Lưu cục bộ".
 ## Project structure
 
 ```
-├── .github/workflows/ci.yml    npm ci + lint + test + registry:check + build + size, Node 22/24
+├── .github/workflows/ci.yml    npm ci + lint + test + registry:check + roadmap:check + build + size, Node 22/24
+├── data/roadmap/               the 180-day plan as JSON: config, 26 weeks, 35 topics, 25 grammar points, words
 ├── scripts/
 │   ├── build-registry.mjs      src/games/*/manifest.json → src/games/registry.js
+│   ├── roadmap-data.mjs        data/roadmap + src/content/vocabulary → 180 dated plan rows + validation
+│   ├── build-roadmap.mjs       those rows → English_Roadmap_From_Zero.xlsx (hand-written OOXML + zip, no deps)
 │   └── bundle-size.mjs         budget reporter
 ├── src/
 │   ├── main.jsx                entry
@@ -194,7 +219,7 @@ starts a fresh round instead of replaying the old one.
 ## Testing
 
 ```bash
-npm test        # 109 tests
+npm test        # 128 tests
 ```
 
 Logic-only, no framework: seeded RNG replay, scoring maths and the level curve, manifest
@@ -205,6 +230,11 @@ reducer, the local store and credential validation.
 
 `npm run smoke:ui` was removed together with the UI it drove. Browser verification is manual
 for now — see Known limitations.
+
+The roadmap tests are the exception: they read the generated workbook back out of its zip and
+assert the 180 dated rows, the id cross-references and the formula wiring, so a plan that no
+longer matches the data fails `npm test` rather than surfacing as an empty sheet in Excel.
+Opening the file in real Excel was verified once by hand (COM automation) on 2026-10-06.
 
 ---
 

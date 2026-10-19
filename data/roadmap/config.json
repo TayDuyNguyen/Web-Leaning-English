@@ -1,0 +1,13 @@
+{
+  "startDate": "2026-10-05",
+  "dayCount": 180,
+  "minutesPerDay": 60,
+  "targetLevels": ["A0", "A1", "A2", "B1"],
+  "exitRule": {
+    "A0": "70% + nói được 10 câu cơ bản",
+    "A1": "75% + hoàn thành speaking checklist",
+    "A2": "75% + 4 kỹ năng đạt mục tiêu",
+    "B1": "80% + mock test đạt mục tiêu"
+  },
+  "vocabularyTargets": { "A0": [300, 500], "A1": [800, 1000], "A2": [1500, 2000], "B1": [2500, 3500] }
+}
