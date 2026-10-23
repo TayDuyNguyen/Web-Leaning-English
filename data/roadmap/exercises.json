@@ -1,0 +1,12 @@
+[
+  { "id": "E001", "level": "A0", "skill": "Grammar", "topic": "Verb BE", "curriculum": "A0-005", "type": "Fill blank", "question": "I ___ a student.", "answer": "am", "difficulty": "Easy" },
+  { "id": "E002", "level": "A0", "skill": "Vocabulary", "topic": "Greetings", "curriculum": "A0-004", "type": "Translate", "question": "Dịch: Xin chào.", "answer": "Hello", "difficulty": "Easy" },
+  { "id": "E003", "level": "A0", "skill": "Speaking", "topic": "Introduction", "curriculum": "A0-004", "type": "Speak", "question": "Nói 5 câu giới thiệu bản thân.", "answer": "Checklist: name / country / job / hobby / goal", "difficulty": "Easy" },
+  { "id": "E004", "level": "A1", "skill": "Grammar", "topic": "Present Simple", "curriculum": "A1-011", "type": "Correct error", "question": "She go to school every day.", "answer": "She goes to school every day.", "difficulty": "Easy" },
+  { "id": "E005", "level": "A1", "skill": "Listening", "topic": "Daily routine", "curriculum": "A1-011", "type": "Listen + note", "question": "Ghi lại 5 hoạt động nghe được.", "answer": "Self-check", "difficulty": "Medium" },
+  { "id": "E006", "level": "A1", "skill": "Writing", "topic": "Daily routine", "curriculum": "A1-011", "type": "Write", "question": "Viết 60 từ về một ngày của bạn.", "answer": "Checklist: thì hiện tại, trạng từ tần suất, liên từ", "difficulty": "Medium" },
+  { "id": "E007", "level": "A2", "skill": "Grammar", "topic": "Present Perfect", "curriculum": "A2-020", "type": "Fill blank", "question": "I ___ never ___ to Japan.", "answer": "have / been", "difficulty": "Medium" },
+  { "id": "E008", "level": "A2", "skill": "Speaking", "topic": "Experience", "curriculum": "A2-020", "type": "Roleplay", "question": "Kể một trải nghiệm đáng nhớ trong 1 phút.", "answer": "Fluency + accuracy", "difficulty": "Medium" },
+  { "id": "E009", "level": "B1", "skill": "Writing", "topic": "Opinion", "curriculum": "B1-035", "type": "Paragraph", "question": "Should students use AI for learning? Write 150 words.", "answer": "Position + reasons + example + conclusion", "difficulty": "Medium" },
+  { "id": "E010", "level": "B1", "skill": "Speaking", "topic": "Opinion", "curriculum": "B1-035", "type": "Discussion", "question": "Give 3 reasons for your opinion.", "answer": "Clarity + examples", "difficulty": "Medium" }
+]

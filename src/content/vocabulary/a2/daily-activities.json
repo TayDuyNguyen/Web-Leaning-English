@@ -1,0 +1,14 @@
+[
+  { "id": "a2_act_001", "word": "exercise", "meaning_vi": "tập thể dục", "level": "A2", "category": "daily-activities", "example": "I do exercise three times a week.", "collocations": ["get exercise", "do exercise"] },
+  { "id": "a2_act_002", "word": "housework", "meaning_vi": "việc nhà", "level": "A2", "category": "daily-activities", "example": "We share the housework every evening.", "collocations": ["do housework", "a day of housework"] },
+  { "id": "a2_act_003", "word": "homework", "meaning_vi": "bài tập về nhà", "level": "A2", "category": "daily-activities", "example": "She finished her homework before dinner.", "collocations": ["do homework", "a lot of homework"] },
+  { "id": "a2_act_004", "word": "weekend", "meaning_vi": "cuối tuần", "level": "A2", "category": "daily-activities", "example": "What are you doing this weekend?", "collocations": ["at the weekend", "long weekend"] },
+  { "id": "a2_act_005", "word": "holiday", "meaning_vi": "kỳ nghỉ", "level": "A2", "category": "daily-activities", "example": "They are on holiday in Nha Trang.", "collocations": ["go on holiday", "summer holiday"] },
+  { "id": "a2_act_006", "word": "birthday", "meaning_vi": "sinh nhật", "level": "A2", "category": "daily-activities", "example": "His birthday is next Monday.", "collocations": ["birthday party", "happy birthday"] },
+  { "id": "a2_act_007", "word": "concert", "meaning_vi": "buổi hòa nhạc", "level": "A2", "category": "daily-activities", "example": "We bought tickets for the concert.", "collocations": ["give a concert", "a rock concert"] },
+  { "id": "a2_act_008", "word": "cinema", "meaning_vi": "rạp phim", "level": "A2", "category": "daily-activities", "example": "The cinema is next to the bookshop.", "collocations": ["go to the cinema", "an old cinema"] },
+  { "id": "a2_act_009", "word": "restaurant", "meaning_vi": "nhà hàng", "level": "A2", "category": "daily-activities", "example": "We had lunch at a small restaurant.", "collocations": ["a cheap restaurant", "run a restaurant"] },
+  { "id": "a2_act_010", "word": "photograph", "meaning_vi": "bức ảnh", "level": "A2", "category": "daily-activities", "example": "She took a photograph of the bay.", "collocations": ["take a photograph", "an old photograph"] },
+  { "id": "a2_act_011", "word": "message", "meaning_vi": "tin nhắn", "level": "A2", "category": "daily-activities", "example": "Leave me a message if I am out.", "collocations": ["send a message", "leave a message"] },
+  { "id": "a2_act_012", "word": "invitation", "meaning_vi": "lời mời", "level": "A2", "category": "daily-activities", "example": "We got an invitation to their wedding.", "collocations": ["accept an invitation", "send an invitation"] }
+]

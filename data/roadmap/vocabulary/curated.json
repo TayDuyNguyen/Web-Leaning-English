@@ -1,0 +1,14 @@
+[
+  { "id": "cur_v001", "word": "hello", "meaning_vi": "xin chào", "ipa": "/həˈloʊ/", "level": "A0", "category": "greeting", "curriculum": "A0-004", "example": "Hello, my name is Anna.", "collocations": ["say hello", "hello there"] },
+  { "id": "cur_v002", "word": "name", "meaning_vi": "tên", "ipa": "/neɪm/", "level": "A0", "category": "basic", "curriculum": "A0-004", "example": "My name is Tom.", "collocations": ["first name", "full name"] },
+  { "id": "cur_v003", "word": "family", "meaning_vi": "gia đình", "ipa": "/ˈfæməli/", "level": "A0", "category": "family", "curriculum": "A0-008", "example": "I have a small family.", "collocations": ["family member"] },
+  { "id": "cur_v004", "word": "eat", "meaning_vi": "ăn", "ipa": "/it/", "level": "A0", "category": "food", "curriculum": "A0-009", "example": "I eat breakfast at seven.", "collocations": ["eat out", "eat breakfast"] },
+  { "id": "cur_v005", "word": "go", "meaning_vi": "đi", "ipa": "/ɡoʊ/", "level": "A0", "category": "verb", "curriculum": "A0-004", "example": "I go to work by bus.", "collocations": ["go to work", "go home"] },
+  { "id": "cur_v006", "word": "usually", "meaning_vi": "thường thì", "ipa": "/ˈjuːʒuəli/", "level": "A1", "category": "routine", "curriculum": "A1-011", "example": "I usually study at night.", "collocations": ["usually do", "not usually"] },
+  { "id": "cur_v008", "word": "order", "meaning_vi": "gọi món / đơn hàng", "ipa": "/ˈɔːrdər/", "level": "A1", "category": "food", "curriculum": "A1-016", "example": "I would like to order a coffee.", "collocations": ["place an order", "order food"] },
+  { "id": "cur_v009", "word": "healthy", "meaning_vi": "khỏe mạnh", "ipa": "/ˈhelθi/", "level": "A1", "category": "health", "curriculum": "A1-019", "example": "Walking is a healthy habit.", "collocations": ["healthy food", "healthy lifestyle"] },
+  { "id": "cur_v011", "word": "improve", "meaning_vi": "cải thiện", "ipa": "/ɪmˈpruːv/", "level": "A2", "category": "work-study", "curriculum": "A2-027", "example": "I want to improve my English.", "collocations": ["improve skills"] },
+  { "id": "cur_v012", "word": "device", "meaning_vi": "thiết bị", "ipa": "/dɪˈvaɪs/", "level": "A2", "category": "technology", "curriculum": "A2-028", "example": "This device is easy to use.", "collocations": ["mobile device"] },
+  { "id": "cur_v013", "word": "although", "meaning_vi": "mặc dù", "ipa": "/ɔːlˈðoʊ/", "level": "B1", "category": "opinion", "curriculum": "A2-026", "example": "Although it was late, we kept studying.", "collocations": ["although + clause"] },
+  { "id": "cur_v014", "word": "explain", "meaning_vi": "giải thích", "ipa": "/ɪkˈspleɪn/", "level": "B1", "category": "communication", "curriculum": "B1-033", "example": "Can you explain this idea?", "collocations": ["explain clearly"] }
+]

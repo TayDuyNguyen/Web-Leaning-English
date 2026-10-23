@@ -5,7 +5,10 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // `Repo/` holds third-party checkouts kept as local reference material (see
+  // .gitignore). They are not part of this app's source and must never enter the
+  // lint graph — their build scripts use globals this project does not declare.
+  globalIgnores(['dist', 'Repo']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
