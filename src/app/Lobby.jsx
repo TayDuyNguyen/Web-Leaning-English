@@ -1,14 +1,15 @@
+import { useCallback, useMemo, useState } from 'react';
+
 import Account from './Account.jsx';
+import WordImport from './WordImport.jsx';
 import { LEVELS } from '../core/contentSchema.js';
-import { poolFor, vocabulary } from '../content/index.js';
+import { allVocabulary, poolFor } from '../content/index.js';
 import { progress as progressOf, weakestWords } from '../player/reducer.js';
 
-const wordById = new Map(vocabulary.map((item) => [item.id, item]));
-
-function LevelPicker({ level, onChangeLevel }) {
+function LevelPicker({ level, words, onChangeLevel }) {
   // A level with no content is offered but marked, not hidden — hiding it makes the
   // app look broken on A2 when the truth is "nobody has written A2 words yet".
-  const counts = Object.fromEntries(LEVELS.map((entry) => [entry, vocabulary.filter((item) => item.level === entry).length]));
+  const counts = Object.fromEntries(LEVELS.map((entry) => [entry, words.filter((item) => item.level === entry).length]));
   const anyEmpty = LEVELS.some((entry) => counts[entry] === 0);
 
   return (
@@ -65,6 +66,15 @@ function GameCard({ game, level, onStart }) {
 }
 
 export default function Lobby({ games, level, onChangeLevel, profile, authReady, weakCount, reviewMode, onToggleReview, account, onStart }) {
+  // Imported words are read from localStorage, so this component has to be told when
+  // the notebook changed. Re-reading into state is the signal: the counts, the
+  // difficulty gates and the list below all render from this one snapshot.
+  const [words, setWords] = useState(() => allVocabulary());
+  const refreshContent = useCallback(() => setWords(allVocabulary()), []);
+  const wordById = useMemo(() => new Map(words.map((item) => [item.id, item])), [words]);
+  const myWords = words.filter((item) => item.category === 'custom' && item.level === level);
+  const levelWords = words.filter((item) => item.level === level).map((item) => item.word);
+
   const stats = progressOf(profile);
   const weak = weakestWords(profile, 8).map((entry) => ({ ...entry, word: wordById.get(entry.wordId)?.word ?? entry.wordId }));
 
@@ -86,7 +96,7 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
 
       <section>
         <h2 className="section-title">Trình độ từ vựng</h2>
-        <LevelPicker level={level} onChangeLevel={onChangeLevel} />
+        <LevelPicker level={level} words={words} onChangeLevel={onChangeLevel} />
       </section>
 
       <section>
@@ -102,6 +112,13 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
           ))}
         </div>
       </section>
+
+      <WordImport
+        level={level}
+        knownWords={levelWords}
+        customWords={myWords}
+        onChanged={refreshContent}
+      />
 
       {weak.length > 0 ? (
         <section>
