@@ -316,6 +316,7 @@ export default function TypingGame({ round, onChange, onSubmit }) {
           ref={captureRef}
           className="typing-capture"
           type="text"
+          tabIndex={-1}
           value=""
           onChange={onCaptureChange}
           aria-label="Ô nhận phím cho bàn phím ảo"
