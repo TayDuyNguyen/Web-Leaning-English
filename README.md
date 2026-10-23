@@ -40,6 +40,18 @@ The Typing Game is the one round whose clock is the fall itself: every difficult
 `seconds: 0` and the pressure comes from milestones that drop words faster each time, so the
 arena's timer stays out of it entirely.
 
+A cleared word pays out its Vietnamese meaning: the footer holds `<word> — <nghĩa>` for 2.6 s
+after the hit, so the English tile is never the only thing learned.
+
+### Words you import yourself
+
+The lobby's **Nạp từ** section takes one `word = nghĩa` per line (a `:` or a tab also works) and
+keeps the result in `localStorage` under `grammax.customWords.v1` — nothing is sent anywhere and
+`src/content/` is never touched. Imported words belong to the level selected in the lobby, reach
+every game through the same `poolFor()` path as authored words, and can be deleted one by one or
+per level. The parser refuses what the typing stage cannot accept (`look after`, `café`, a line
+without a meaning) and reports the line number instead of dropping it silently.
+
 **Content authored so far: 74 vocabulary items** — A1 (26: `daily-life`, `travel`), A2 (24:
 `daily-activities`, `describing-places`), B1 (24: `work-study`, `opinions-abstract`). B2 and C1
 have no files yet; the lobby labels those levels "chưa có" rather than hiding them.
@@ -217,7 +229,7 @@ starts a fresh round instead of replaying the old one.
 ## Testing
 
 ```bash
-npm test        # 104 tests
+npm test        # 116 tests
 ```
 
 Logic-only, no framework: seeded RNG replay, scoring maths and the level curve, manifest

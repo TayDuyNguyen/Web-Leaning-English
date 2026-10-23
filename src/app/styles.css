@@ -222,11 +222,41 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   display: flex; align-items: center; gap: var(--space-lg); flex-wrap: wrap;
   background: var(--color-surface); border-radius: var(--rounded-lg); padding: var(--space-md) var(--space-lg);
 }
-.typing-lock { margin: 0; flex: 1; min-width: 200px; font-size: 16px; font-weight: 300; }
+.typing-lock-column { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 2px; }
+.typing-lock { margin: 0; font-size: 16px; font-weight: 300; }
+.typing-hit { margin: 0; font-size: 14px; line-height: 1.4; }
+.typing-hit strong { font-weight: 600; }
+.typing-hit-meaning { font-weight: 300; }
 .typing-lock--idle { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-on-surface-variant); }
 .typing-lock-word { font-size: 22px; font-weight: 600; line-height: 1.2; color: var(--color-on-surface-variant); }
 .typing-lock-word strong { color: var(--color-primary); }
 .typing-lock-meaning { margin-left: var(--space-md); color: var(--color-primary); }
+
+/* --- Imported words: a notebook page, not a form --- */
+.word-import { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-md); }
+.word-import-input {
+  min-height: 96px; padding: 12px var(--space-lg); resize: vertical;
+  background: var(--color-surface); border: 1px solid var(--color-outline); border-radius: var(--rounded-md);
+  color: var(--color-primary); font-family: inherit; font-size: 16px; font-weight: 300; line-height: 1.6;
+}
+.word-import-input:focus { outline: none; border-color: var(--color-primary); }
+.word-import-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.word-import-errors { margin: 0; padding-left: 18px; color: var(--color-signal); font-size: 14px; }
+.word-import-note { margin: 0; font-size: 14px; }
+.word-import-list {
+  list-style: none; margin: var(--space-sm) 0 0; padding: 0; display: grid; gap: 1px;
+  background: var(--color-outline-variant); border: 1px solid var(--color-outline-variant);
+  border-radius: var(--rounded-md); overflow: hidden;
+}
+.word-import-list li {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-md);
+  padding: 10px var(--space-lg); background: var(--color-surface); font-size: 14px;
+}
+.word-import-remove {
+  border: 0; background: none; color: var(--color-on-surface-variant);
+  font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px;
+}
+.word-import-remove:hover { color: var(--color-signal); }
 
 /* --- Controls: hover inverts, it never darkens --- */
 .text-input {

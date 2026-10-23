@@ -25,6 +25,8 @@ function createState(round) {
     combo: 0,
     answers: {},
     missed: [],
+    lastHit: null,
+    hitSeq: 0,
     startedAt: 0,
     pausedAt: 0,
     pausedTotal: 0,
@@ -42,6 +44,7 @@ function viewOf(state) {
     combo: state.combo,
     answers: { ...state.answers },
     missed: [...state.missed],
+    lastHit: state.lastHit,
   };
 }
 
@@ -81,6 +84,11 @@ export default function TypingGame({ round, onChange, onSubmit }) {
       if (correct) {
         state.hits += 1;
         state.combo += 1;
+        // A cleared word owes the player its meaning: the falling tile only ever
+        // carried English, and the Vietnamese half has to surface at the moment
+        // the word dies or it is never learned, only typed.
+        state.hitSeq += 1;
+        state.lastHit = { word: item.word, meaningVi: item.meaningVi, seq: state.hitSeq };
       } else {
         state.missed = [...state.missed, item.id];
         state.combo = 0;
@@ -240,6 +248,21 @@ export default function TypingGame({ round, onChange, onSubmit }) {
     stageRef.current?.focus({ preventScroll: true });
   }, []);
 
+  // The note is a glance, not a log: 2.6 s is long enough to read a Vietnamese gloss
+  // and short enough that it never competes with the next word already falling.
+  useEffect(() => {
+    const hit = view.lastHit;
+    if (hit === null) return undefined;
+    const id = setTimeout(() => {
+      const state = stateRef.current;
+      if (state !== null && state.lastHit === hit) {
+        state.lastHit = null;
+        publish();
+      }
+    }, 2600);
+    return () => clearTimeout(id);
+  }, [publish, view.lastHit]);
+
   const onCaptureChange = useCallback(
     (event) => {
       const typed = event.target.value;
@@ -358,17 +381,28 @@ export default function TypingGame({ round, onChange, onSubmit }) {
       </div>
 
       <div className="typing-footer">
-        {locked ? (
-          <p className="typing-lock">
-            <span className="typing-lock-word">
-              <strong>{locked.word.slice(0, view.typed.length)}</strong>
-              {locked.word.slice(view.typed.length)}
-            </span>
-            <span className="typing-lock-meaning">{locked.meaningVi}</span>
+        <div className="typing-lock-column">
+          <p className="typing-hit" aria-live="polite">
+            {view.lastHit ? (
+              <>
+                <strong>{view.lastHit.word}</strong>
+                <span className="typing-hit-meaning"> — {view.lastHit.meaningVi}</span>
+              </>
+            ) : null}
           </p>
-        ) : (
-          <p className="typing-lock typing-lock--idle">Gõ chữ cái đầu của từ đang rơi để khoá mục tiêu.</p>
-        )}
+
+          {locked ? (
+            <p className="typing-lock">
+              <span className="typing-lock-word">
+                <strong>{locked.word.slice(0, view.typed.length)}</strong>
+                {locked.word.slice(view.typed.length)}
+              </span>
+              <span className="typing-lock-meaning">{locked.meaningVi}</span>
+            </p>
+          ) : (
+            <p className="typing-lock typing-lock--idle">Gõ chữ cái đầu của từ đang rơi để khoá mục tiêu.</p>
+          )}
+        </div>
 
         <button
           type="button"

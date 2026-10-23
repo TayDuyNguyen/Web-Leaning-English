@@ -1,5 +1,6 @@
 import { levelFromFolder, validateVocabularyCollection } from '../core/contentSchema.js';
 import { reviewPool as selectReviewPool } from '../core/selection.js';
+import { readCustomWords } from './customWords.js';
 
 // The level is taken from the directory, never from the item, so a file filed
 // under a2/ that still claims A1 words fails loudly instead of quietly
@@ -19,9 +20,15 @@ export const vocabulary = Object.entries(files)
 // A game declares which content types it eats, never which files. Adding
 // content/grammar/ later means adding one line here and every game that lists
 // "grammar" picks it up without being touched.
+// Words the player imported live in localStorage, not in the bundle, and are read on
+// every call so a freshly imported word is playable without a reload.
 const SOURCES = {
-  vocabulary: () => vocabulary,
+  vocabulary: () => vocabulary.concat(readCustomWords()),
 };
+
+export function allVocabulary() {
+  return SOURCES.vocabulary();
+}
 
 export function poolFor({ contentTypes, level }) {
   const unsupported = contentTypes.filter((type) => !SOURCES[type]);
