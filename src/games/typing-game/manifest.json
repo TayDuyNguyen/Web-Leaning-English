@@ -1,0 +1,31 @@
+{
+  "id": "typing-game",
+  "name": "Typing Game",
+  "summary": "Gõ những từ tiếng Anh đang rơi trước khi chúng chạm đáy.",
+  "contentTypes": ["vocabulary"],
+  "levels": ["A1", "A2", "B1", "B2", "C1"],
+  "skills": ["vocabulary", "spelling"],
+  "difficulties": [
+    {
+      "id": "easy",
+      "label": "Dễ",
+      "seconds": 0,
+      "minItems": 6,
+      "settings": { "words": 6, "lives": 4, "baseFallMs": 9000, "ramp": 0.88, "milestones": 2 }
+    },
+    {
+      "id": "normal",
+      "label": "Thường",
+      "seconds": 0,
+      "minItems": 10,
+      "settings": { "words": 10, "lives": 3, "baseFallMs": 8200, "ramp": 0.86, "milestones": 3 }
+    },
+    {
+      "id": "hard",
+      "label": "Khó",
+      "seconds": 0,
+      "minItems": 16,
+      "settings": { "words": 16, "lives": 2, "baseFallMs": 7000, "ramp": 0.84, "milestones": 4, "lanes": 4 }
+    }
+  ]
+}

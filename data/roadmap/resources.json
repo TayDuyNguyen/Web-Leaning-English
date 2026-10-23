@@ -1,0 +1,7 @@
+[
+  { "id": "R001", "source": "British Council LearnEnglish", "levels": "A1–B1", "skills": "All", "topic": "Bài luyện theo cấp độ CEFR", "type": "Website", "free": "YES", "url": "https://learnenglish.britishcouncil.org/", "use": "Chọn bài đúng chủ đề của tuần", "note": "Nguồn chuẩn cho luyện tập theo CEFR" },
+  { "id": "R002", "source": "USA Learns", "levels": "A0–A2", "skills": "All", "topic": "Khoá cho người mới bắt đầu", "type": "Course", "free": "YES", "url": "https://www.usalearns.org/", "use": "Dùng làm khoá chính cho 12 tuần đầu", "note": "Đặc biệt tốt cho người mất gốc" },
+  { "id": "R003", "source": "BBC Learning English", "levels": "A1–B1", "skills": "Listening, Grammar, Vocabulary, Pronunciation", "topic": "Tiếng Anh hằng ngày", "type": "Website", "free": "YES", "url": "https://www.bbclearningenglish.com/", "use": "10–20 phút mỗi ngày cho phần nghe", "note": "Bài ngắn, dễ giữ nhịp hằng ngày" },
+  { "id": "R004", "source": "VOCA", "levels": "A0–B1", "skills": "Vocabulary", "topic": "Từ vựng theo cấp độ", "type": "Course / Plan", "free": "Tuỳ thời điểm", "url": "https://www.voca.vn/", "use": "Bổ sung từ vựng khi hết nguồn trong sheet VOCAB", "note": "Kiểm tra mức miễn phí trước khi dùng" },
+  { "id": "R005", "source": "ESL Desk", "levels": "A1–A2", "skills": "All", "topic": "Lộ trình cho người mới", "type": "Website", "free": "YES", "url": "https://esldesk.com/start/beginner", "use": "Bài tập thêm khi điểm dưới 70%", "note": "Chỉ dùng làm bài tập phụ" }
+]

@@ -1,0 +1,16 @@
+[
+  { "id": "a1_daily_001", "word": "breakfast", "meaning_vi": "bữa sáng", "level": "A1", "category": "daily-life", "example": "I have breakfast at seven o'clock.", "collocations": ["have breakfast", "breakfast time"] },
+  { "id": "a1_daily_002", "word": "window", "meaning_vi": "cửa sổ", "level": "A1", "category": "daily-life", "example": "She opened the window to let in some air.", "collocations": ["open the window", "by the window"] },
+  { "id": "a1_daily_003", "word": "mirror", "meaning_vi": "cái gương", "level": "A1", "category": "daily-life", "example": "He looked at himself in the mirror.", "collocations": ["in the mirror", "a full-length mirror"] },
+  { "id": "a1_daily_004", "word": "umbrella", "meaning_vi": "cái ô", "level": "A1", "category": "daily-life", "example": "Take an umbrella — it might rain.", "collocations": ["open an umbrella", "bring an umbrella"] },
+  { "id": "a1_daily_005", "word": "kitchen", "meaning_vi": "nhà bếp", "level": "A1", "category": "daily-life", "example": "The keys are on the kitchen table.", "collocations": ["kitchen table", "in the kitchen"] },
+  { "id": "a1_daily_006", "word": "bedroom", "meaning_vi": "phòng ngủ", "level": "A1", "category": "daily-life", "example": "My bedroom is small but bright.", "collocations": ["master bedroom", "go to the bedroom"] },
+  { "id": "a1_daily_007", "word": "wallet", "meaning_vi": "cái ví", "level": "A1", "category": "daily-life", "example": "I left my wallet at home.", "collocations": ["lose your wallet", "leather wallet"] },
+  { "id": "a1_daily_008", "word": "key", "meaning_vi": "chìa khoá", "level": "A1", "category": "daily-life", "example": "Do you have a key for this door?", "collocations": ["car key", "lose the key"] },
+  { "id": "a1_daily_009", "word": "bottle", "meaning_vi": "cái chai", "level": "A1", "category": "daily-life", "example": "Drink a bottle of water every day.", "collocations": ["a bottle of water", "glass bottle"] },
+  { "id": "a1_daily_010", "word": "routine", "meaning_vi": "thói quen hằng ngày", "level": "A1", "category": "daily-life", "example": "Running is part of my morning routine.", "collocations": ["daily routine", "morning routine"] },
+  { "id": "a1_daily_011", "word": "neighbour", "meaning_vi": "hàng xóm", "level": "A1", "category": "daily-life", "example": "Our neighbour has a big brown dog.", "collocations": ["next-door neighbour", "a friendly neighbour"] },
+  { "id": "a1_daily_012", "word": "laundry", "meaning_vi": "quần áo cần giặt", "level": "A1", "category": "daily-life", "example": "I do the laundry every Sunday.", "collocations": ["do the laundry", "a pile of laundry"] },
+  { "id": "a1_daily_013", "word": "grocery", "meaning_vi": "tiệm tạp hoá", "level": "A1", "category": "daily-life", "example": "We buy milk at the grocery near us.", "collocations": ["grocery store", "grocery shopping"] },
+  { "id": "a1_daily_014", "word": "schedule", "meaning_vi": "lịch trình", "level": "A1", "category": "daily-life", "example": "My work schedule changes every week.", "collocations": ["busy schedule", "on schedule"] }
+]

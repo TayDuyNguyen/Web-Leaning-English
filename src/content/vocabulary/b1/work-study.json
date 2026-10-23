@@ -1,0 +1,14 @@
+[
+  { "id": "b1_work_001", "word": "colleague", "meaning_vi": "đồng nghiệp", "level": "B1", "category": "work-study", "example": "A colleague helped me finish the report.", "collocations": ["a close colleague", "former colleague"] },
+  { "id": "b1_work_002", "word": "salary", "meaning_vi": "lương", "level": "B1", "category": "work-study", "example": "She earns a good salary in the city.", "collocations": ["a monthly salary", "on a salary of"] },
+  { "id": "b1_work_003", "word": "deadline", "meaning_vi": "hạn chót", "level": "B1", "category": "work-study", "example": "The deadline for the project is Friday.", "collocations": ["meet a deadline", "a tight deadline"] },
+  { "id": "b1_work_004", "word": "contract", "meaning_vi": "hợp đồng", "level": "B1", "category": "work-study", "example": "He signed a two-year contract last month.", "collocations": ["sign a contract", "a fixed-term contract"] },
+  { "id": "b1_work_005", "word": "application", "meaning_vi": "đơn xin việc", "level": "B1", "category": "work-study", "example": "Her application arrived the day after the closing date.", "collocations": ["send an application", "a job application"] },
+  { "id": "b1_work_006", "word": "interview", "meaning_vi": "buổi phỏng vấn", "level": "B1", "category": "work-study", "example": "I have an interview at ten o'clock.", "collocations": ["attend an interview", "an interview question"] },
+  { "id": "b1_work_007", "word": "promotion", "meaning_vi": "sự thăng chức", "level": "B1", "category": "work-study", "example": "He got a promotion after two years.", "collocations": ["get a promotion", "a well-deserved promotion"] },
+  { "id": "b1_work_008", "word": "responsibility", "meaning_vi": "trách nhiệm", "level": "B1", "category": "work-study", "example": "Checking the invoices is her responsibility.", "collocations": ["take responsibility for", "a sense of responsibility"] },
+  { "id": "b1_work_009", "word": "qualification", "meaning_vi": "bằng cấp", "level": "B1", "category": "work-study", "example": "The job needs a teaching qualification.", "collocations": ["a teaching qualification", "professional qualifications"] },
+  { "id": "b1_work_010", "word": "experience", "meaning_vi": "kinh nghiệm", "level": "B1", "category": "work-study", "example": "She has five years' experience in marketing.", "collocations": ["work experience", "a valuable experience"] },
+  { "id": "b1_work_011", "word": "employment", "meaning_vi": "việc làm có trả công", "level": "B1", "category": "work-study", "example": "He found employment at a local factory.", "collocations": ["gain employment", "a period of employment"] },
+  { "id": "b1_work_012", "word": "unemployment", "meaning_vi": "tình trạng thất nghiệp", "level": "B1", "category": "work-study", "example": "Unemployment fell slightly last quarter.", "collocations": ["a rise in unemployment", "unemployment benefits"] }
+]
