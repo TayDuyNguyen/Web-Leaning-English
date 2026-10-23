@@ -8,157 +8,9 @@ export const generatedBy = 'scripts/build-registry.mjs';
 
 export const games = [
   {
-    "id": "fill-blank",
-    "name": "Fill Blank",
-    "summary": "Điền từ còn thiếu vào chỗ trống trong câu ví dụ.",
-    "contentTypes": [
-      "vocabulary"
-    ],
-    "levels": [
-      "A1",
-      "A2",
-      "B1",
-      "B2",
-      "C1"
-    ],
-    "skills": [
-      "vocabulary",
-      "reading"
-    ],
-    "difficulties": [
-      {
-        "seconds": 0,
-        "minItems": 4,
-        "settings": {
-          "questions": 4,
-          "options": 4
-        },
-        "id": "easy",
-        "label": "Dễ"
-      },
-      {
-        "seconds": 40,
-        "minItems": 6,
-        "settings": {
-          "questions": 6,
-          "options": 4
-        },
-        "id": "normal",
-        "label": "Thường"
-      },
-      {
-        "seconds": 30,
-        "minItems": 8,
-        "settings": {
-          "questions": 8,
-          "options": 4
-        },
-        "id": "hard",
-        "label": "Khó"
-      }
-    ]
-  },
-  {
-    "id": "word-match",
-    "name": "Word Match",
-    "summary": "Nối mỗi từ tiếng Anh với nghĩa tiếng Việt của nó.",
-    "contentTypes": [
-      "vocabulary"
-    ],
-    "levels": [
-      "A1",
-      "A2",
-      "B1",
-      "B2",
-      "C1"
-    ],
-    "skills": [
-      "vocabulary"
-    ],
-    "difficulties": [
-      {
-        "seconds": 0,
-        "minItems": 3,
-        "settings": {
-          "pairs": 3
-        },
-        "id": "easy",
-        "label": "Dễ"
-      },
-      {
-        "seconds": 30,
-        "minItems": 5,
-        "settings": {
-          "pairs": 5
-        },
-        "id": "normal",
-        "label": "Thường"
-      },
-      {
-        "seconds": 20,
-        "minItems": 8,
-        "settings": {
-          "pairs": 8
-        },
-        "id": "hard",
-        "label": "Khó"
-      }
-    ]
-  },
-  {
-    "id": "word-quiz",
-    "name": "Word Quiz",
-    "summary": "Chọn nghĩa tiếng Việt đúng cho từ tiếng Anh được đưa ra.",
-    "contentTypes": [
-      "vocabulary"
-    ],
-    "levels": [
-      "A1",
-      "A2",
-      "B1",
-      "B2",
-      "C1"
-    ],
-    "skills": [
-      "vocabulary"
-    ],
-    "difficulties": [
-      {
-        "seconds": 0,
-        "minItems": 5,
-        "settings": {
-          "questions": 5,
-          "options": 4
-        },
-        "id": "easy",
-        "label": "Dễ"
-      },
-      {
-        "seconds": 30,
-        "minItems": 8,
-        "settings": {
-          "questions": 8,
-          "options": 4
-        },
-        "id": "normal",
-        "label": "Thường"
-      },
-      {
-        "seconds": 20,
-        "minItems": 12,
-        "settings": {
-          "questions": 12,
-          "options": 4
-        },
-        "id": "hard",
-        "label": "Khó"
-      }
-    ]
-  },
-  {
-    "id": "word-scramble",
-    "name": "Word Scramble",
-    "summary": "Sắp xếp lại các chữ cái đã xáo trộn để thành từ đúng.",
+    "id": "typing-game",
+    "name": "Typing Game",
+    "summary": "Gõ những từ tiếng Anh đang rơi trước khi chúng chạm đáy.",
     "contentTypes": [
       "vocabulary"
     ],
@@ -176,27 +28,40 @@ export const games = [
     "difficulties": [
       {
         "seconds": 0,
-        "minItems": 4,
+        "minItems": 6,
         "settings": {
-          "words": 4
+          "words": 6,
+          "lives": 4,
+          "baseFallMs": 9000,
+          "ramp": 0.88,
+          "milestones": 2
         },
         "id": "easy",
         "label": "Dễ"
       },
       {
-        "seconds": 45,
-        "minItems": 6,
+        "seconds": 0,
+        "minItems": 10,
         "settings": {
-          "words": 6
+          "words": 10,
+          "lives": 3,
+          "baseFallMs": 8200,
+          "ramp": 0.86,
+          "milestones": 3
         },
         "id": "normal",
         "label": "Thường"
       },
       {
-        "seconds": 30,
-        "minItems": 8,
+        "seconds": 0,
+        "minItems": 16,
         "settings": {
-          "words": 8
+          "words": 16,
+          "lives": 2,
+          "baseFallMs": 7000,
+          "ramp": 0.84,
+          "milestones": 4,
+          "lanes": 4
         },
         "id": "hard",
         "label": "Khó"

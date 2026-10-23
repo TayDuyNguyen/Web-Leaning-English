@@ -28,3 +28,6 @@ dist-ssr
 
 # Qoder CLI local settings
 .qoder/settings.local.json
+
+# Local third-party tool checkouts (e.g. cloned analysers/research repos)
+Repo/

@@ -16,9 +16,9 @@ games/     how it is practised   each game reads the same items and asks differe
 player/    what happened         one reducer feeds XP, level, streak and word mastery
 ```
 
-A game never stores knowledge of its own. `word-match` and `word-scramble` both draw from
-`src/content/vocabulary/`, so one word is practised several ways in one session — which is the
-difference between a game and a flashcard deck.
+A game never stores knowledge of its own. The Typing Game draws from `src/content/vocabulary/`,
+the shared pool that any future game would read too, so a word is practised the same way the
+app teaches it everywhere — which is the difference between a game and a flashcard deck.
 
 ---
 
@@ -26,10 +26,7 @@ difference between a game and a flashcard deck.
 
 | Game | Mechanic | Content it consumes |
 | --- | --- | --- |
-| **Word Match** | Pair each English word with its Vietnamese meaning; the round auto-submits once every pair is placed | `contentTypes: ["vocabulary"]` |
-| **Word Scramble** | Reorder shuffled letters back into the word; submit enables once every box has text | `contentTypes: ["vocabulary"]` |
-| **Fill Blank** | The headword is blanked out of its own example sentence; choose from four words drawn from the same topic | `contentTypes: ["vocabulary"]` |
-| **Word Quiz** | Given the English word, choose its meaning from four; distractors prefer the same topic | `contentTypes: ["vocabulary"]` |
+| **Typing Game** | Words fall toward a deck; the first letter locks a target, the rest of the word clears it, and a word that lands costs a life | `contentTypes: ["vocabulary"]` |
 
 Each game declares its own difficulties in `manifest.json`, and each difficulty carries
 `minItems` so the lobby can grey out a round the content pool cannot fill instead of starting
@@ -37,10 +34,11 @@ one that would throw.
 
 | | Easy | Normal | Hard |
 | --- | --- | --- | --- |
-| Word Match | 3 pairs, no timer | 5 pairs, 30 s | 8 pairs, 20 s |
-| Word Scramble | 4 words, no timer | 6 words, 45 s | 8 words, 30 s |
-| Fill Blank | 4 questions, no timer | 6 questions, 40 s | 8 questions, 30 s |
-| Word Quiz | 5 questions, no timer | 8 questions, 30 s | 12 questions, 20 s |
+| Typing Game | 6 words, 4 lives, no timer | 10 words, 3 lives, no timer | 16 words, 2 lives, no timer |
+
+The Typing Game is the one round whose clock is the fall itself: every difficulty sets
+`seconds: 0` and the pressure comes from milestones that drop words faster each time, so the
+arena's timer stays out of it entirely.
 
 **Content authored so far: 74 vocabulary items** — A1 (26: `daily-life`, `travel`), A2 (24:
 `daily-activities`, `describing-places`), B1 (24: `work-study`, `opinions-abstract`). B2 and C1
@@ -219,12 +217,12 @@ starts a fresh round instead of replaying the old one.
 ## Testing
 
 ```bash
-npm test        # 128 tests
+npm test        # 104 tests
 ```
 
 Logic-only, no framework: seeded RNG replay, scoring maths and the level curve, manifest
 validation, vocabulary file integrity (unique ids, unique word text, unique meanings, and every
-example containing its own headword), all four games' round construction and grading, pool
+example containing its own headword), the typing game's round construction and grading, pool
 selection for review mode, registry synchronisation, the DESIGN.md token contract, the player
 reducer, the local store and credential validation.
 
@@ -248,7 +246,9 @@ Opening the file in real Excel was verified once by hand (COM automation) on 202
 - **Nothing is deployed.** Vercel builds branch previews for this repo (configured in its
   dashboard — there is no `vercel.json` in the tree), behind SSO. CI has been green on `main`
   and `develop` since 2026-10-02.
-- **Only four games, all vocabulary-shaped.** The previous build had TenseRush, SentenceBuilder
+- **Only one game shipped, vocabulary-shaped.** Word Match, Word Quiz, Word Scramble and Fill
+  Blank were removed on 2026-10-23 so the Typing Game is the only module; their code and tests
+  remain in git history. The previous build had TenseRush, SentenceBuilder
   and VocabBattle; they were dropped in the 2026-10-01 rebuild and have not been rewritten
   against the new contract. Grammar, listening, reading, pronunciation and VSTEP content do not
   exist yet, so `contentTypes` other than `vocabulary` are unwritten.

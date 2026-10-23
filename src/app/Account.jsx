@@ -39,7 +39,7 @@ export default function Account({ source, email, busy, error, onSignIn, onSignUp
       <p className="account-note">Supabase đã cấu hình nhưng bạn chưa đăng nhập. Đang lưu cục bộ cho tới khi đăng nhập.</p>
       <div className="account-fields">
         <input
-          className="scramble-input"
+          className="text-input"
           type="email"
           placeholder="Email"
           value={credential.email}
@@ -47,7 +47,7 @@ export default function Account({ source, email, busy, error, onSignIn, onSignUp
           onChange={(event) => setCredential({ ...credential, email: event.target.value })}
         />
         <input
-          className="scramble-input"
+          className="text-input"
           type="password"
           placeholder="Mật khẩu"
           value={credential.password}

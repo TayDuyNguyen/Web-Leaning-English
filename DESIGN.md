@@ -289,10 +289,10 @@ component, never round a layout panel to 8px, never put a pill button in a squar
 14px/500 label. Hover **inverts fully** to white fill with ink text — a hard flip, not a
 darken. That inversion is the brand's signature interaction.
 
-**Option tiles** (fill-blank, word-quiz, word-match) are white with a hairline border at 8px
-radius. Selected inverts to ink. After grading, the chosen tile goes `correct` green or
-`incorrect` orange and the tile that *should* have been picked is outlined in green. Feedback
-is a fill change, never a shake, glow or animation-heavy transition.
+**Answer tiles** (a question-shaped game, if one is added later) are white with a hairline
+border at 8px radius. Selected inverts to ink. After grading, the chosen tile goes `correct`
+green or `incorrect` orange and the tile that *should* have been picked is outlined in green.
+Feedback is a fill change, never a shake, glow or animation-heavy transition.
 
 **Level chips** are the only place a tint appears as a fill: 4px/12px padding, ink text, 8px
 radius.
