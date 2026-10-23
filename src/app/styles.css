@@ -72,6 +72,7 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --duration-press: 120ms;
   --duration-exit: 100ms;
+  --duration-ui: 180ms;
 
   color-scheme: light;
 }
@@ -226,6 +227,15 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: flex-start; justify-content: center; gap: var(--space-md);
   padding: var(--space-xl); background: var(--color-surface);
+  /* The veil replaces the whole stage in one frame, which reads as a glitch. It
+     enters on opacity plus 4px of travel; the game is already paused, so the
+     motion never delays input. */
+  opacity: 1; transform: translateY(0);
+  transition: opacity var(--duration-ui) var(--ease-out), transform var(--duration-ui) var(--ease-out);
+}
+
+@starting-style {
+  .typing-veil { opacity: 0; transform: translateY(4px); }
 }
 .typing-veil-title { margin: 0; font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
 .typing-veil-body { margin: 0; max-width: 46ch; font-size: 14px; font-weight: 300; line-height: 2.0; }
@@ -290,7 +300,16 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 .ghost-button { background: var(--color-background); border-color: var(--color-outline-variant); color: var(--color-primary); }
 
 /* --- Result panel: the one dark, loud surface in the app --- */
-.result-panel { background: var(--color-inverse-surface); color: var(--color-inverse-on-surface); border-radius: var(--rounded-lg); padding: var(--space-container-padding); }
+.result-panel {
+  background: var(--color-inverse-surface); color: var(--color-inverse-on-surface); border-radius: var(--rounded-lg); padding: var(--space-container-padding);
+  opacity: 1; transform: translateY(0);
+  transition: opacity var(--duration-ui) var(--ease-out), transform var(--duration-ui) var(--ease-out);
+}
+
+/* A finished round is worth one settled entrance — 180ms, 6px, no bounce. */
+@starting-style {
+  .result-panel { opacity: 0; transform: translateY(6px); }
+}
 .result-score { margin: 0; font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
 .result-meta { margin: var(--space-sm) 0 0; font-size: 14px; font-weight: 300; line-height: 2.0; color: var(--color-inverse-on-surface); }
 .save-warning { margin: var(--space-sm) 0 0; color: var(--color-signal); font-size: 14px; }
@@ -364,5 +383,6 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   .difficulty-button:active:not(:disabled),
   .level-chip:active { transform: none; }
   .typing-word.is-hit { transition: none; }
+  .typing-veil, .result-panel { transition: none; }
   /* typing-fall stays: the words falling is the game, not decoration. */
 }
