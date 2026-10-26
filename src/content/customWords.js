@@ -7,6 +7,10 @@ import { LEVELS } from '../core/contentSchema.js';
 export const CUSTOM_WORDS_KEY = 'grammax.customWords.v1';
 export const CUSTOM_WORDS_LIMIT = 300;
 export const MAX_MEANING_LENGTH = 120;
+// The stage has to show the whole word on one tile, and the player has to type it
+// before it lands. 24 fits real advanced vocabulary on a 320px stage; the parser
+// refuses the rest instead of letting a 45-letter word make a round impossible.
+export const MAX_WORD_LENGTH = 24;
 
 // The typing stage only produces [a-z'-], and a word must start and end with a letter,
 // so "o'clock" and "check-in" pass while "look after" or "café" do not.
@@ -30,7 +34,8 @@ function normalize(raw) {
   const word = typeof raw?.word === 'string' ? raw.word.trim().toLowerCase() : '';
   const meaningVi = typeof raw?.meaningVi === 'string' ? raw.meaningVi.trim().replace(/\s+/g, ' ') : '';
   const level = typeof raw?.level === 'string' ? raw.level.trim().toUpperCase() : '';
-  if (!WORD.test(word) || meaningVi === '' || meaningVi.length > MAX_MEANING_LENGTH) return null;
+  if (!WORD.test(word) || word.length > MAX_WORD_LENGTH) return null;
+  if (meaningVi === '' || meaningVi.length > MAX_MEANING_LENGTH) return null;
   if (!LEVELS.includes(level)) return null;
   return {
     id: customWordId(level, word),
@@ -73,6 +78,10 @@ export function parseCustomWords(text, { level, taken = [] } = {}) {
 
       if (!WORD.test(word)) {
         errors.push({ line: at, text: line, message: 'từ chỉ gồm chữ thường a-z, dấu nháy đơn hoặc gạch nối' });
+        return;
+      }
+      if (word.length > MAX_WORD_LENGTH) {
+        errors.push({ line: at, text: line, message: `từ dài quá ${MAX_WORD_LENGTH} ký tự` });
         return;
       }
       if (meaningVi === '') {

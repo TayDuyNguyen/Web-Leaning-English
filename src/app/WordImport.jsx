@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import {
   CUSTOM_WORDS_LIMIT,
+  MAX_WORD_LENGTH,
   addCustomWords,
   clearCustomWordsForLevel,
   parseCustomWords,
@@ -58,7 +59,7 @@ export default function WordImport({ level, knownWords, customWords, onChanged }
     <section>
       <h2 className="section-title">Nạp từ</h2>
       <p className="hint">
-        Mỗi dòng một từ, dạng <code>word = nghĩa</code>. Từ chỉ nằm trên máy này (localStorage),
+        Mỗi dòng một từ, dạng <code>word = nghĩa</code> (từ tối đa {MAX_WORD_LENGTH} ký tự). Từ chỉ nằm trên máy này (localStorage),
         không gửi đi đâu, và chỉ được dùng ở mức {level}.
       </p>
 

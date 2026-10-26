@@ -42,7 +42,7 @@ wallet = cái ví
 check-in = nhận phòng
 ```
 
-- Lưu trong `localStorage` (`grammax.customWords.v1`), tối đa 300 từ, không gửi đi đâu.
+- Lưu trong `localStorage` (`grammax.customWords.v1`), tối đa 300 từ, mỗi từ tối đa 24 ký tự, không gửi đi đâu.
 - Từ thuộc đúng mức đang chọn (A1–C1) và được dùng chung cho mọi ván, kể cả khi bật Ôn tập.
 - Xoá được từng từ hoặc xoá cả mức. Dòng sai (thiếu nghĩa, có dấu cách, ký tự lạ) sẽ bị báo
   kèm số dòng chứ không bị bỏ qua im lặng.

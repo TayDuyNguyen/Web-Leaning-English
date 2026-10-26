@@ -79,6 +79,9 @@
 
 * { box-sizing: border-box; }
 
+/* The browser draws a grey flash on every tap. The app has its own press state. */
+button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+
 body {
   margin: 0;
   background: var(--color-background);
@@ -92,7 +95,7 @@ body {
 
 code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); padding: 0 4px; font-size: 14px; }
 
-.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.app-shell { min-height: 100svh; display: flex; flex-direction: column; }
 
 /* --- Nav rail: flat, no border, no shadow. Separated from content only because
        content surfaces are white. --- */
@@ -102,7 +105,7 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   padding: 0 var(--space-lg); background: var(--color-background);
   max-width: var(--space-grid-max-width); width: 100%; margin: 0 auto;
 }
-.brand { background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-primary); font-family: inherit; font-size: 18px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.brand { background: none; border: 0; padding: 0; display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: var(--color-primary); font-family: inherit; font-size: 18px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 .header-meta { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
 .header-stat { color: var(--color-on-surface-variant); font-size: 11px; font-weight: 600; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; }
 .save-badge { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: var(--rounded-md); border: 1px solid var(--color-outline-variant); color: var(--color-primary); background: var(--color-surface); }
@@ -189,7 +192,9 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   /* The fall is a transform, so the distance has to be known in CSS: the stage
      height less the word's own top offset. max() keeps the 380/320px floors that
      min-height used to provide, without a second property to keep in sync. */
-  --stage-height: max(62vh, 380px);
+  /* svh is the viewport with the mobile browser chrome showing, so the deck stays
+     on screen instead of sitting under the URL bar. */
+  --stage-height: max(62svh, 380px);
   position: relative; height: var(--stage-height); overflow: hidden;
   background: var(--color-surface-dim); border-radius: var(--rounded-lg);
 }
@@ -211,7 +216,7 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 /* Exit faster than enter: the word is already dead, the eye only needs a beat to
    register it. Opacity only — the running keyframes own `transform`, and CSS
    animations win over transitions on the same property. */
-.typing-word.is-hit { opacity: 0; transition: opacity var(--duration-exit) ease-out; }
+.typing-word.is-hit { opacity: 0; transition: opacity var(--duration-exit) var(--ease-out); }
 .typing-word.is-missed { opacity: .3; color: var(--color-signal); border-color: var(--color-signal); }
 
 /* `top` would relayout the stage on every frame. A transform is composited, so the
@@ -249,8 +254,8 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   background: var(--color-surface); border-radius: var(--rounded-lg); padding: var(--space-md) var(--space-lg);
 }
 .typing-lock-column { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 2px; }
-.typing-lock { margin: 0; font-size: 16px; font-weight: 300; }
-.typing-hit { margin: 0; font-size: 14px; line-height: 1.4; }
+.typing-lock { margin: 0; font-size: 16px; font-weight: 300; overflow-wrap: anywhere; }
+.typing-hit { margin: 0; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
 .typing-hit strong { font-weight: 600; }
 .typing-hit-meaning { font-weight: 300; }
 .typing-lock--idle { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-on-surface-variant); }
@@ -271,17 +276,23 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 .word-import-note { margin: 0; font-size: 14px; }
 .word-import-list {
   list-style: none; margin: var(--space-sm) 0 0; padding: 0; display: grid; gap: 1px;
+  grid-template-columns: minmax(0, 1fr);
   background: var(--color-outline-variant); border: 1px solid var(--color-outline-variant);
   border-radius: var(--rounded-md); overflow: hidden;
 }
 .word-import-list li {
   display: flex; align-items: center; justify-content: space-between; gap: var(--space-md);
+  min-width: 0;
   padding: 10px var(--space-lg); background: var(--color-surface); font-size: 14px;
 }
+.word-import-list li > span { min-width: 0; overflow-wrap: anywhere; }
 .word-import-remove {
+  position: relative; flex-shrink: 0;
   border: 0; background: none; color: var(--color-on-surface-variant);
   font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px;
 }
+/* The × stays small, but the thing the finger has to hit is 44px tall. */
+.word-import-remove::after { content: ''; position: absolute; inset: -13px -12px; }
 
 /* --- Controls: hover inverts, it never darkens --- */
 .text-input {
@@ -319,13 +330,13 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
    orange ✗ clears the 3:1 large-text threshold, which it misses at body size (3.15:1 vs a
    4.5:1 requirement). */
 .review-list { list-style: none; margin: var(--space-lg) 0 0; padding: 0; background: var(--color-surface); color: var(--color-primary); border-radius: var(--rounded-md); overflow: hidden; }
-.review-list li { display: flex; gap: var(--space-sm); align-items: baseline; flex-wrap: wrap; padding: var(--space-sm) var(--space-lg); font-size: 14px; font-weight: 300; border-bottom: 1px solid var(--color-outline); }
+.review-list li { display: flex; gap: var(--space-sm); align-items: baseline; flex-wrap: wrap; min-width: 0; padding: var(--space-sm) var(--space-lg); font-size: 14px; font-weight: 300; border-bottom: 1px solid var(--color-outline); }
 .review-list li:last-child { border-bottom: 0; }
 .review-list span { font-size: 24px; line-height: 1; }
 .review-list .is-right > span { color: var(--color-correct); }
 .review-list .is-wrong > span { color: var(--color-incorrect); }
-.review-list strong { font-weight: 600; }
-.review-list em { color: var(--color-on-surface-variant); font-style: normal; font-size: 14px; }
+.review-list strong { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.review-list em { color: var(--color-on-surface-variant); font-style: normal; font-size: 14px; overflow-wrap: anywhere; }
 .result-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
 .result-actions .ghost-button { background: transparent; border-color: var(--color-inverse-on-surface); color: var(--color-inverse-on-surface); }
 .result-actions .primary-button { background: var(--color-inverse-on-surface); color: var(--color-primary); border-color: var(--color-inverse-on-surface); }
@@ -343,7 +354,7 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   .result-score { font-size: 40px; }
   .arena-clock { font-size: 28px; }
   .profile-card { gap: var(--space-lg); }
-  .typing-stage { --stage-height: max(56vh, 320px); }
+  .typing-stage { --stage-height: max(56svh, 320px); }
   .typing-word { font-size: 18px; padding: 0 var(--space-sm); }
   .typing-veil { padding: var(--space-lg); }
   .typing-veil-title { font-size: 40px; }
