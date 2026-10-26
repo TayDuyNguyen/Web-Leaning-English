@@ -73,6 +73,7 @@
   --duration-press: 120ms;
   --duration-exit: 100ms;
   --duration-ui: 180ms;
+  --duration-bar: 260ms;
 
   color-scheme: light;
 }
@@ -82,8 +83,17 @@
 /* The browser draws a grey flash on every tap. The app has its own press state. */
 button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 
+/* Dragging on the play field (or on a control) should move the game, not select
+   a word. Form fields keep their normal selection behaviour. */
+.typing-stage, .brand, .primary-button, .ghost-button, .difficulty-button, .level-chip {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 body {
   margin: 0;
+  /* Pulling past the end of the page should not refresh the app mid-round. */
+  overscroll-behavior-y: contain;
   background: var(--color-background);
   color: var(--color-primary);
   font-family: var(--font-family-base);
@@ -121,7 +131,16 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 .profile-level { margin: 0; font-size: 28px; font-weight: 600; line-height: 1.2; }
 .profile-xp { margin: var(--space-xs) 0 var(--space-sm); color: var(--color-on-surface-variant); font-size: 14px; }
 .xp-bar { width: 220px; height: 8px; border-radius: var(--rounded-full); background: var(--color-surface-dim); overflow: hidden; }
-.xp-fill { height: 100%; background: var(--color-primary); }
+/* scaleX instead of width: the browser composites the fill without re-laying out
+   the profile card, and the bar reads left-to-right from its origin. */
+.xp-fill {
+  height: 100%; width: 100%; background: var(--color-primary);
+  transform: scaleX(var(--xp-progress, 0)); transform-origin: left;
+  transition: transform var(--duration-bar) var(--ease-out);
+}
+@starting-style {
+  .xp-fill { transform: scaleX(0); }
+}
 .profile-stats { display: flex; gap: var(--space-xl); margin: 0; }
 .profile-stats dt { color: var(--color-on-surface-variant); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 .profile-stats dd { margin: var(--space-xs) 0 0; font-size: 28px; font-weight: 600; }
@@ -272,6 +291,7 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 }
 .word-import-input:focus { outline: none; border-color: var(--color-primary); }
 .word-import-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.word-import-list + .word-import-actions { margin-top: var(--space-sm); }
 .word-import-errors { margin: 0; padding-left: 18px; color: var(--color-signal); font-size: 14px; }
 .word-import-note { margin: 0; font-size: 14px; }
 .word-import-list {
@@ -395,5 +415,6 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   .level-chip:active { transform: none; }
   .typing-word.is-hit { transition: none; }
   .typing-veil, .result-panel { transition: none; }
+  .xp-fill { transition: none; }
   /* typing-fall stays: the words falling is the game, not decoration. */
 }

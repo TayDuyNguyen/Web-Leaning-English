@@ -77,6 +77,7 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
 
   const stats = progressOf(profile);
   const weak = weakestWords(profile, 8).map((entry) => ({ ...entry, word: wordById.get(entry.wordId)?.word ?? entry.wordId }));
+  const xpProgress = Math.min(1, stats.xpIntoLevel / stats.xpForNextLevel);
 
   return (
     <div className="lobby">
@@ -84,7 +85,7 @@ export default function Lobby({ games, level, onChangeLevel, profile, authReady,
         <div>
           <p className="profile-level">Cấp {stats.level}</p>
           <p className="profile-xp">{stats.xpIntoLevel} / {stats.xpForNextLevel} XP</p>
-          <div className="xp-bar"><div className="xp-fill" style={{ width: `${Math.min(100, (stats.xpIntoLevel / stats.xpForNextLevel) * 100)}%` }} /></div>
+          <div className="xp-bar"><div className="xp-fill" style={{ '--xp-progress': xpProgress }} /></div>
         </div>
         <dl className="profile-stats">
           <div><dt>Chuỗi ngày</dt><dd>{profile.streak}</dd></div>
