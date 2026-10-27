@@ -9,6 +9,7 @@ import {
   createRound,
   gradeRound,
   isComplete,
+  outcomeOf,
   pickTarget,
   splitMilestones,
   spreadInitials,
@@ -148,6 +149,12 @@ test('a pool smaller than the difficulty is a hard error', () => {
     () => createRound({ items: items.slice(0, 4), difficulty: normal, seed: 1 }),
     /needs 10 words but the content pool only has 4/
   );
+});
+
+test('a cleared board with a life left is a win, an empty life bar is a loss', () => {
+  assert.equal(outcomeOf({ lives: 2, answered: 10, total: 10 }), 'won');
+  assert.equal(outcomeOf({ lives: 0, answered: 10, total: 10 }), 'lost');
+  assert.equal(outcomeOf({ lives: 1, answered: 4, total: 10 }), null);
 });
 
 // The stage listens for characters, so a word the keyboard cannot produce would be

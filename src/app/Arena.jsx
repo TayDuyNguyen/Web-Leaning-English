@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { poolFor, reviewPool } from '../content/index.js';
-import { buildGameResult } from '../core/scoring.js';
+import { buildGameResult, wordsPerMinute } from '../core/scoring.js';
 import { pickDifficulty } from '../core/registry.js';
+import { shareResult } from './shareResult.js';
 
 export default function Arena({ game, level, difficultyId, seed, reviewIds, onNavigate, onRestart, onFinish }) {
   const Play = game.Component;
@@ -30,12 +31,14 @@ export default function Arena({ game, level, difficultyId, seed, reviewIds, onNa
   const deadlineRef = useRef(0);
   const [status, setStatus] = useState('playing');
   const [result, setResult] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [review, setReview] = useState([]);
   const [saved, setSaved] = useState(true);
   const [remaining, setRemaining] = useState(difficulty.seconds);
+  const [shareState, setShareState] = useState('idle');
 
   const record = useCallback(
-    (payload) => {
+    (payload, meta) => {
       if (!round || status !== 'playing') return;
       const answers = payload ?? answersRef.current;
       const attempts = game.logic.gradeRound({ round, answers });
@@ -44,16 +47,40 @@ export default function Arena({ game, level, difficultyId, seed, reviewIds, onNa
         difficulty: difficulty.id,
         seed,
         attempts,
-        elapsedMs: Date.now() - startedAt.current,
+        elapsedMs: meta?.elapsedMs ?? Date.now() - startedAt.current,
       });
       setStatus('done');
       setResult(built);
+      setSummary(meta ?? null);
       setReview(attempts);
       setSaved(true);
       onFinish(built).catch(() => setSaved(false));
     },
     [round, status, game.logic, game.manifest.id, difficulty.id, seed, onFinish]
   );
+
+  // The canvas owns the image; this callback owns the button's three states. A
+  // cancelled native sheet goes back to idle rather than claiming a download.
+  const shareCard = useCallback(async () => {
+    if (!result || !summary) return;
+    setShareState('busy');
+    try {
+      const how = await shareResult({
+        outcome: summary.outcome,
+        score: result.score,
+        accuracy: result.accuracy,
+        lives: summary.lives,
+        hits: summary.hits,
+        words: round.items.length,
+        wpm: wordsPerMinute(summary.hits, summary.elapsedMs),
+        level,
+        difficulty: difficulty.label,
+      });
+      setShareState(how === 'cancelled' ? 'idle' : how);
+    } catch {
+      setShareState('error');
+    }
+  }, [result, summary, round.items.length, level, difficulty.label]);
 
   // The interval is the only thing that advances the clock, and the timeout submit
   // runs from its callback rather than from an effect watching `remaining` — an
@@ -98,6 +125,16 @@ export default function Arena({ game, level, difficultyId, seed, reviewIds, onNa
     );
   }
 
+  const wpm = summary ? wordsPerMinute(summary.hits, summary.elapsedMs) : 0;
+  const shareNote =
+    shareState === 'shared'
+      ? 'Đã mở bảng chia sẻ.'
+      : shareState === 'downloaded'
+        ? 'Đã tải ảnh kết quả.'
+        : shareState === 'error'
+          ? 'Không tạo được ảnh. Thử lại.'
+          : '';
+
   return (
     <div className="arena">
       <div className="arena-bar">
@@ -112,10 +149,31 @@ export default function Arena({ game, level, difficultyId, seed, reviewIds, onNa
 
       {status === 'done' ? (
         <div className="result-panel">
+          {summary?.outcome ? (
+            <p className={`result-kicker${summary.outcome === 'lost' ? ' is-lost' : ''}`}>
+              {summary.outcome === 'won' ? 'Hoàn thành' : 'Hết mạng'}
+            </p>
+          ) : null}
           <p className="result-score">{result.score} điểm</p>
           <p className="result-meta">
             +{result.xp} XP · đúng {result.correct}/{result.correct + result.wrong} · chính xác {result.accuracy}%
           </p>
+          {summary ? (
+            <dl className="result-stats">
+              <div>
+                <dt>Mạng còn lại</dt>
+                <dd>{summary.lives}</dd>
+              </div>
+              <div>
+                <dt>Từ đã hạ</dt>
+                <dd>{summary.hits}/{round.items.length}</dd>
+              </div>
+              <div>
+                <dt>Từ/phút</dt>
+                <dd>{wpm}</dd>
+              </div>
+            </dl>
+          ) : null}
           {!saved ? <p className="save-warning">Ván này chưa lưu được — điểm chỉ hiển thị trên màn hình.</p> : null}
 
           <ul className="review-list">
@@ -132,10 +190,24 @@ export default function Arena({ game, level, difficultyId, seed, reviewIds, onNa
             <button type="button" className="primary-button" onClick={onRestart}>
               Chơi lại
             </button>
+            {summary ? (
+              <button
+                type="button"
+                className="ghost-button"
+                onClick={shareCard}
+                disabled={shareState === 'busy'}
+                aria-busy={shareState === 'busy'}
+              >
+                {shareState === 'busy' ? 'Đang tạo ảnh…' : 'Chia sẻ kết quả'}
+              </button>
+            ) : null}
             <button type="button" className="ghost-button" onClick={() => onNavigate({ view: 'lobby' })}>
               Game khác
             </button>
           </div>
+          {summary ? (
+            <p className="result-share-note" role="status">{shareNote}</p>
+          ) : null}
         </div>
       ) : null}
     </div>

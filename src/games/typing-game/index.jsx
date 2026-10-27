@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { advance, pickTarget } from './logic.js';
+import { advance, outcomeOf, pickTarget } from './logic.js';
 
 // Only the characters every authored word is made of. Anything else — arrows,
 // modifiers, function keys — must not steal a lock or reset progress.
@@ -68,10 +68,23 @@ export default function TypingGame({ round, onChange, onSubmit }) {
       if (state.finished) return;
       state.finished = true;
       state.status = 'over';
+      // The word count and remaining lives are what turn the score into a verdict.
+      // The arena cannot infer them after the game unmounts, so send both with the
+      // answers and let the shared scoring layer stay untouched.
+      const meta = {
+        outcome: outcomeOf({
+          lives: state.lives,
+          answered: Object.keys(state.answers).length,
+          total: round.items.length,
+        }),
+        lives: state.lives,
+        hits: state.hits,
+        elapsedMs: Math.round(elapsedOf(state)),
+      };
       publish();
-      onSubmit({ ...state.answers });
+      onSubmit({ ...state.answers }, meta);
     },
-    [onSubmit, publish]
+    [onSubmit, publish, round.items.length]
   );
 
   const resolve = useCallback(

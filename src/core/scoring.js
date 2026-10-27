@@ -45,6 +45,15 @@ export function levelForXp(totalXp) {
   return { level, xpIntoLevel: remaining, xpForNextLevel: need };
 }
 
+// Words per minute over the time actually spent playing, not the wall clock around
+// a paused tab. A round shorter than a second reports 0 instead of pretending the
+// player typed infinitely fast.
+export function wordsPerMinute(words, elapsedMs) {
+  const minutes = Math.max(0, Number(elapsedMs) || 0) / 60000;
+  if (minutes <= 0) return 0;
+  return Math.round(Math.max(0, Number(words) || 0) / minutes);
+}
+
 // A streak that survives a day skipping is a streak nobody believes in.
 export function nextStreak(previous, lastPlayedOn, today) {
   if (!lastPlayedOn) return 1;
