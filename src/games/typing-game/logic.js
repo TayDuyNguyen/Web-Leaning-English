@@ -180,3 +180,12 @@ export function gradeRound({ round, answers }) {
 export function isComplete(round, answers = {}) {
   return round.items.every((item) => Object.hasOwn(answers, item.id));
 }
+
+// The result screen needs one fact the score cannot express: did the player clear
+// the board or run out of lives? Lives win the tie because the last word landing is
+// a loss even when every word has technically been answered.
+export function outcomeOf({ lives, answered, total }) {
+  if (lives <= 0) return 'lost';
+  if (total > 0 && answered >= total) return 'won';
+  return null;
+}

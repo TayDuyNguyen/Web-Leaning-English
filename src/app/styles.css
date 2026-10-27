@@ -342,7 +342,14 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
   .result-panel { opacity: 0; transform: translateY(6px); }
 }
 .result-score { margin: 0; font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+.result-kicker { margin: 0 0 var(--space-sm); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: .7; }
+.result-kicker.is-lost { color: var(--color-signal); opacity: 1; }
 .result-meta { margin: var(--space-sm) 0 0; font-size: 14px; font-weight: 300; line-height: 2.0; color: var(--color-inverse-on-surface); }
+.result-stats { display: flex; gap: var(--space-xl); flex-wrap: wrap; margin: var(--space-lg) 0 0; }
+.result-stats dt { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: .65; }
+.result-stats dd { margin: var(--space-xs) 0 0; font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.result-share-note { margin: var(--space-sm) 0 0; font-size: 14px; opacity: .7; }
+.result-share-note:empty { display: none; }
 .save-warning { margin: var(--space-sm) 0 0; color: var(--color-signal); font-size: 14px; }
 /* The review list is a white card set into the dark result panel — the same "media well
    frames content" move as the rest of the system. It has to be white because --color-correct
@@ -357,7 +364,7 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 .review-list .is-wrong > span { color: var(--color-incorrect); }
 .review-list strong { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .review-list em { color: var(--color-on-surface-variant); font-style: normal; font-size: 14px; overflow-wrap: anywhere; }
-.result-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.result-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-top: var(--space-lg); }
 .result-actions .ghost-button { background: transparent; border-color: var(--color-inverse-on-surface); color: var(--color-inverse-on-surface); }
 .result-actions .primary-button { background: var(--color-inverse-on-surface); color: var(--color-primary); border-color: var(--color-inverse-on-surface); }
 
@@ -372,6 +379,8 @@ code { background: var(--color-surface-dim); border-radius: var(--rounded-sm); p
 
 @media (max-width: 640px) {
   .result-score { font-size: 40px; }
+  .result-stats { gap: var(--space-lg); }
+  .result-stats dd { font-size: 24px; }
   .arena-clock { font-size: 28px; }
   .profile-card { gap: var(--space-lg); }
   .typing-stage { --stage-height: max(56svh, 320px); }

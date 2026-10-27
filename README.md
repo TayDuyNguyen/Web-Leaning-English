@@ -33,6 +33,13 @@ npm run dev   # http://localhost:5173
 
 Không có đồng hồ đếm ngược: áp lực đến từ tốc độ rơi, tăng dần theo từng mốc.
 
+## Kết quả
+
+- Hạ hết số từ khi còn mạng: **Hoàn thành**. Hết mạng trước khi hạ hết: **Hết mạng**.
+- Bảng kết quả hiện điểm, XP, độ chính xác, mạng còn lại, số từ đã hạ và từ/phút.
+- **Chia sẻ kết quả** tạo ảnh PNG 1080×1350: điện thoại mở bảng chia sẻ của hệ điều hành,
+  máy tính tải ảnh về. Ảnh dùng đúng nền tối của bảng kết quả và token màu trong `DESIGN.md`.
+
 ## Nạp từ riêng
 
 Ở sảnh, mục **Nạp từ** nhận mỗi dòng một từ, dạng `word = nghĩa` (`:` hoặc tab cũng được):
@@ -71,7 +78,7 @@ danh sách ôn tập và cam tín hiệu làm nền.
 
 ```
 src/
-  app/        App, Arena (chạy một ván), Lobby, WordImport, styles.css
+  app/        App, Arena (chạy một ván), Lobby, WordImport, shareResult (ảnh kết quả), styles.css
   core/       rng, scoring, selection, schema — thuần JS, không React
   content/    bộ từ theo mức + bộ nạp từ cục bộ
   games/      registry.js (sinh tự động) + typing-game/{manifest,logic,index}
@@ -99,7 +106,7 @@ Tạo `src/games/<id>/` gồm `manifest.json`, `logic.js` (thuần JS, export `c
 
 ## Kiểm thử
 
-`npm test` chạy 116 test: luật chơi, chấm điểm, chọn từ, xác thực nội dung, registry, hợp đồng
+`npm test` chạy 120 test: luật chơi, chấm điểm, chọn từ, xác thực nội dung, registry, hợp đồng
 DESIGN.md, player store. Chưa có test trình duyệt — kiểm tra giao diện vẫn phải làm tay.
 
 ## Giới hạn hiện tại

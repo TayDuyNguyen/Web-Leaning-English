@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildGameResult, levelForXp, nextStreak, POINTS } from '../src/core/scoring.js';
+import { buildGameResult, levelForXp, nextStreak, POINTS, wordsPerMinute } from '../src/core/scoring.js';
 
 const attempts = (pattern) =>
   pattern.map((correct, index) => ({ wordId: `w${index}`, correct }));
@@ -53,6 +53,13 @@ test('the level curve charges 100x more each level', () => {
   assert.equal(levelForXp(300).level, 3);
   assert.equal(levelForXp(300).xpIntoLevel, 0);
   assert.equal(levelForXp(300).xpForNextLevel, 300);
+});
+
+test('words per minute uses time spent playing, not wall-clock time', () => {
+  assert.equal(wordsPerMinute(20, 60000), 20);
+  assert.equal(wordsPerMinute(6, 30000), 12);
+  assert.equal(wordsPerMinute(5, 0), 0);
+  assert.equal(wordsPerMinute(5, -100), 0);
 });
 
 test('streaks continue on consecutive days and break otherwise', () => {
