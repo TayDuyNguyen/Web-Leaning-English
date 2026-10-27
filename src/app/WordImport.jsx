@@ -2,16 +2,24 @@ import { useState } from 'react';
 
 import {
   CUSTOM_WORDS_LIMIT,
+  MAX_WORD_LENGTH,
   addCustomWords,
   clearCustomWordsForLevel,
   parseCustomWords,
   removeCustomWord,
 } from '../content/customWords.js';
 
+// The store holds up to 300 words, which is far too long to list by default.
+// Show the newest handful (the ones just imported) and let the player expand.
+const COLLAPSED_LIMIT = 8;
+
 export default function WordImport({ level, knownWords, customWords, onChanged }) {
   const [draft, setDraft] = useState('');
   const [errors, setErrors] = useState([]);
   const [note, setNote] = useState('');
+  const [expanded, setExpanded] = useState(false);
+
+  const visibleWords = expanded ? customWords : customWords.slice(-COLLAPSED_LIMIT);
 
   const submit = (event) => {
     event.preventDefault();
@@ -58,7 +66,7 @@ export default function WordImport({ level, knownWords, customWords, onChanged }
     <section>
       <h2 className="section-title">Nạp từ</h2>
       <p className="hint">
-        Mỗi dòng một từ, dạng <code>word = nghĩa</code>. Từ chỉ nằm trên máy này (localStorage),
+        Mỗi dòng một từ, dạng <code>word = nghĩa</code> (từ tối đa {MAX_WORD_LENGTH} ký tự). Từ chỉ nằm trên máy này (localStorage),
         không gửi đi đâu, và chỉ được dùng ở mức {level}.
       </p>
 
@@ -98,24 +106,39 @@ export default function WordImport({ level, knownWords, customWords, onChanged }
       {note !== '' ? <p className="word-import-note" role="status">{note}</p> : null}
 
       {customWords.length > 0 ? (
-        <ul className="word-import-list">
-          {customWords.map((item) => (
-            <li key={item.id}>
-              <span>
-                <strong>{item.word}</strong> — {item.meaningVi}
-              </span>
+        <>
+          <ul className="word-import-list" id="word-import-list">
+            {visibleWords.map((item) => (
+              <li key={item.id}>
+                <span>
+                  <strong>{item.word}</strong> — {item.meaningVi}
+                </span>
+                <button
+                  type="button"
+                  className="word-import-remove"
+                  onClick={() => remove(item.id)}
+                  aria-label={`Xoá ${item.word}`}
+                  title={`Xoá ${item.word}`}
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+          {customWords.length > COLLAPSED_LIMIT ? (
+            <div className="word-import-actions">
               <button
                 type="button"
-                className="word-import-remove"
-                onClick={() => remove(item.id)}
-                aria-label={`Xoá ${item.word}`}
-                title={`Xoá ${item.word}`}
+                className="ghost-button"
+                onClick={() => setExpanded((value) => !value)}
+                aria-expanded={expanded}
+                aria-controls="word-import-list"
               >
-                ×
+                {expanded ? 'Thu gọn' : `Xem tất cả ${customWords.length} từ`}
               </button>
-            </li>
-          ))}
-        </ul>
+            </div>
+          ) : null}
+        </>
       ) : (
         <p className="hint">Chưa có từ nào cho mức {level}.</p>
       )}

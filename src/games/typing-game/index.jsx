@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { advance, pickTarget } from './logic.js';
 
@@ -248,6 +248,41 @@ export default function TypingGame({ round, onChange, onSubmit }) {
     stageRef.current?.focus({ preventScroll: true });
   }, []);
 
+  // A tile is centred on its lane, but a long word would hang off the stage edge and
+  // lose letters to overflow:hidden. Clamp the centre so the whole tile stays inside;
+  // short words keep their exact lane position. Measured rather than estimated because
+  // the width depends on the font that actually loaded.
+  const clampTiles = useCallback(() => {
+    const stage = stageRef.current;
+    if (stage === null) return;
+    const width = stage.clientWidth;
+    if (width === 0) return;
+    for (const tile of stage.querySelectorAll('.typing-word')) {
+      const half = tile.offsetWidth / 2;
+      const lane = Number(tile.dataset.lane);
+      const centre = ((lane + 0.5) * width) / round.lanes;
+      tile.style.left = `${Math.min(Math.max(half, centre), width - half)}px`;
+    }
+  }, [round.lanes]);
+
+  useLayoutEffect(() => {
+    clampTiles();
+  }, [clampTiles]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (stage === null) return undefined;
+    const observer = new ResizeObserver(clampTiles);
+    observer.observe(stage);
+    const onResize = () => clampTiles();
+    window.addEventListener('resize', onResize);
+    document.fonts?.ready.then(onResize).catch(() => {});
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
+  }, [clampTiles]);
+
   // The note is a glance, not a log: 2.6 s is long enough to read a Vietnamese gloss
   // and short enough that it never competes with the next word already falling.
   useEffect(() => {
@@ -316,6 +351,7 @@ export default function TypingGame({ round, onChange, onSubmit }) {
           ref={captureRef}
           className="typing-capture"
           type="text"
+          tabIndex={-1}
           value=""
           onChange={onCaptureChange}
           aria-label="Ô nhận phím cho bàn phím ảo"
@@ -341,8 +377,8 @@ export default function TypingGame({ round, onChange, onSubmit }) {
             <span
               key={item.id}
               className={className}
+              data-lane={item.lane}
               style={{
-                left: `${((item.lane + 0.5) * 100) / round.lanes}%`,
                 animationDuration: `${item.fallMs}ms`,
                 animationDelay: `${item.spawnAtMs}ms`,
                 // Paused by default so the ready veil and the pause veil both freeze

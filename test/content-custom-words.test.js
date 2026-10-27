@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   CUSTOM_WORDS_KEY,
   CUSTOM_WORDS_LIMIT,
+  MAX_WORD_LENGTH,
   addCustomWords,
   clearCustomWords,
   clearCustomWordsForLevel,
@@ -157,6 +158,33 @@ test('the notebook is capped so one paste cannot grow storage without bound', ()
   assert.equal(errors.length, 0);
   addCustomWords(items, storage);
   assert.equal(readCustomWords(storage).length, CUSTOM_WORDS_LIMIT);
+});
+
+test('a word longer than a tile can show is refused, at the limit or above', () => {
+  const tooLong = 'pneumonoultramicroscopicsilicovolcanoconiosis';
+  const atLimit = 'b'.repeat(MAX_WORD_LENGTH);
+  const { items, errors } = parseCustomWords(`${tooLong} = quá dài\n${atLimit} = vừa đủ`, { level: 'A1' });
+
+  assert.deepEqual(items.map((item) => item.word), [atLimit]);
+  assert.equal(errors.length, 1);
+  assert.equal(errors[0].line, 1);
+  assert.match(errors[0].message, new RegExp(String(MAX_WORD_LENGTH)));
+});
+
+test('storage drops a word longer than a tile can show instead of rendering a broken round', () => {
+  const storage = memoryStorage();
+  storage.setItem(
+    CUSTOM_WORDS_KEY,
+    JSON.stringify([
+      { word: 'a'.repeat(MAX_WORD_LENGTH + 1), meaningVi: 'quá dài', level: 'A1' },
+      { word: 'a'.repeat(MAX_WORD_LENGTH), meaningVi: 'vừa đủ', level: 'A1' },
+    ])
+  );
+
+  assert.deepEqual(
+    readCustomWords(storage).map((item) => item.word),
+    ['a'.repeat(MAX_WORD_LENGTH)]
+  );
 });
 
 test('clearing one level leaves the other levels alone', () => {
